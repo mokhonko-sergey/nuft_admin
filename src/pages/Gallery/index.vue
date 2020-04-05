@@ -10,6 +10,7 @@
 <script>
 import Upload from './Upload';
 import ShowPics from './ShowPics';
+
 export default {
     components: {
         Upload,

@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { eventBus } from "../../main";
 export default {
     data: () => ({
         images: []
@@ -56,6 +57,9 @@ export default {
         }
     },
     created () {
+        eventBus.$on('updatePics', () => {
+            this.fetchPics();
+        });
         this.fetchPics();
     }
 }

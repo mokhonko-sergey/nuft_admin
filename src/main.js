@@ -30,6 +30,11 @@ Vue.use(GlobalComponents);
 Vue.use(GlobalDirectives);
 Vue.use(Notifications);
 
+const eventBus = new Vue();
+export {
+  eventBus
+};
+
 /* eslint-disable no-new */
 new Vue({
   el: "#app",

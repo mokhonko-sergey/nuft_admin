@@ -29,6 +29,7 @@
 
 <script>
 import Loading from "@/components/Loading";
+import { eventBus } from "../../main";
 export default {
   name: "file-upload-form",
   props: {
@@ -51,13 +52,7 @@ export default {
     async upload() {
       const url = "https://us-central1-nuft-kebop.cloudfunctions.net/gallery";
       if (!this.file) {
-        this.notifyVue(
-          "Choose file please",
-          "top",
-          "right",
-          "warning",
-          "warning"
-        );
+        this.notifyVue("Choose file please", "top", "right", "warning", "warning");
         return;
       }
       this.isLoad = true;
@@ -77,27 +72,17 @@ export default {
         this.isLoad = false;
         if (result.success)
           this.notifyVue(result.messages[0], "top", "right", "done", "success");
+        
+        eventBus.$emit("updatePics");
       } catch (err) {
         this.isLoad = false;
-        this.notifyVue(
-          "Can't upload file",
-          "top",
-          "right",
-          "warning",
-          "danger"
-        );
+        this.notifyVue("Can't upload file", "top", "right", "warning", "danger");
       }
       this.description = this.$refs.file.value = null;
       return;
     },
     notifyVue(message, verticalAlign, horizontalAlign, icon, type) {
-      this.$notify({
-        message,
-        icon,
-        horizontalAlign,
-        verticalAlign,
-        type
-      });
+      this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
   components: {
