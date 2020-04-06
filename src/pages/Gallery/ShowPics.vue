@@ -1,6 +1,7 @@
 <template>
-   <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100" >
-        <md-card class="md-card-plain">
+   <div class="md-layout-item md-size-100" >
+       <loading v-if="isLoad"/>
+        <md-card class="md-card-plain" v-else>
           <md-card-header data-background-color="green">
             <h4 class="title">Table on Plain Background</h4>
             <p class="category">Here is a subtitle for this table</p>
@@ -16,38 +17,48 @@
             </md-content>
           </md-card-content>
         </md-card>
-        <!-- <pagination></pagination> -->
+
+        <pagination :items="items" @pageQuery="fetchPics"></pagination>
       </div>
 </template>
 
 <script>
 import FirebaseApi from '../../services/firebase-api';
 import { eventBus } from "../../main";
-// import Pagination from "./Pagination";
+import Pagination from "./Pagination";
+import { MainLoading } from "@/components/Loading/index.js";
 
 const { getPics, delPicture } = new FirebaseApi();
 
 export default {
     data: () => ({
-        itemsOnPage: 5,
+        isLoad: false,
+        itemsOnPage: 25,
+        startAt: 0,
+        items: null,
         images: []
     }),
     methods: {
-        async fetchPics () {
-            const result = await getPics(this.itemsOnPage, 0);
+        async fetchPics (itemsOnPage, startAt) {
+            this.isLoad = true;
+            const result = await getPics(itemsOnPage, startAt);
             this.images = result.data;
+            this.items = result.сountOfItems;
+            this.isLoad = false;
         },
 
         async delPic(name) {
+            this.isLoad = true;
             const res = await delPicture(name);
             if(res.success){
                 const index = this.images.findIndex((el) => el.filename === name);
                 this.images.splice(index, 1);
                 this.notifyVue(res.message, "done", "success");
-                this.fetchPics();
+                // this.fetchPics();
             }else{
                 this.notifyVue(res.message, "warning", "danger");
             }
+            this.isLoad = false;
         },
 
         notifyVue(message, icon, type, verticalAlign='top', horizontalAlign="right") {
@@ -56,10 +67,14 @@ export default {
     },
     created () {
         eventBus.$on('updatePics', () => {
-            this.fetchPics();
+            this.fetchPics(this.itemsOnPage, this.startAt);
         });
-        this.fetchPics();
+        this.fetchPics(this.itemsOnPage, this.startAt);
     },
+    components: {
+        Pagination,
+        loading: MainLoading
+    }
 }
 </script>
 

@@ -41,7 +41,6 @@ export default class FirebaseApi {
         return await res.json();
     }
 
-
     delPicture = async (itemName) => {
         return await this.del('gallery', itemName);
     }

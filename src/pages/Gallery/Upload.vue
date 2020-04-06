@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading";
+import { MiniLoading } from "@/components/Loading/index.js";
 import { eventBus } from "../../main";
 import FirebaseApi from "../../services/firebase-api";
 
@@ -78,7 +78,7 @@ export default {
     }
   },
   components: {
-    Loading
+    loading: MiniLoading
   }
 };
 </script>
