@@ -16,43 +16,41 @@
             </md-content>
           </md-card-content>
         </md-card>
+        <!-- <pagination></pagination> -->
       </div>
 </template>
 
 <script>
+import FirebaseApi from '../../services/firebase-api';
 import { eventBus } from "../../main";
+// import Pagination from "./Pagination";
+
+const { getPics, delPicture } = new FirebaseApi();
+
 export default {
     data: () => ({
+        itemsOnPage: 5,
         images: []
     }),
     methods: {
         async fetchPics () {
-            const url = 'https://us-central1-nuft-kebop.cloudfunctions.net/gallery';
-            const items = 12;
-            const start = 0;
-            const response = await fetch(`${url}?itemOnPage=${items}&start=${start}`);
-            const result = await response.json()
+            const result = await getPics(this.itemsOnPage, 0);
             this.images = result.data;
         },
-        async delPic(name) {
-            const url = 'https://us-central1-nuft-kebop.cloudfunctions.net/gallery';
-            const options = {
-                method: "DELETE"
-            }
 
-            try{
-                const response =  await fetch(`${url}/${name}`, options);
-                const res = await response.json();
-                if(res.success){
-                    this.notifyVue(res.message, "top", "right", "done", "success");
-                    const index = this.images.findIndex((el) => el.filename === name);
-                    this.images.splice(index, 1);
-                }else{
-                    this.notifyVue(res.message, "top", "right", "warning", "danger");
-                }
-            }catch(e){ }
+        async delPic(name) {
+            const res = await delPicture(name);
+            if(res.success){
+                const index = this.images.findIndex((el) => el.filename === name);
+                this.images.splice(index, 1);
+                this.notifyVue(res.message, "done", "success");
+                this.fetchPics();
+            }else{
+                this.notifyVue(res.message, "warning", "danger");
+            }
         },
-        notifyVue(message, verticalAlign, horizontalAlign, icon, type) {
+
+        notifyVue(message, icon, type, verticalAlign='top', horizontalAlign="right") {
             this.$notify({ message, icon, horizontalAlign, verticalAlign, type});
         }
     },
@@ -61,7 +59,7 @@ export default {
             this.fetchPics();
         });
         this.fetchPics();
-    }
+    },
 }
 </script>
 

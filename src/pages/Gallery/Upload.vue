@@ -30,6 +30,10 @@
 <script>
 import Loading from "@/components/Loading";
 import { eventBus } from "../../main";
+import FirebaseApi from "../../services/firebase-api";
+
+const { uploadPicture } = new FirebaseApi();
+
 export default {
   name: "file-upload-form",
   props: {
@@ -49,39 +53,27 @@ export default {
     selectFile(e) {
       this.file = this.$refs.file.files[0];
     },
+    
     async upload() {
-      const url = "https://us-central1-nuft-kebop.cloudfunctions.net/gallery";
       if (!this.file) {
-        this.notifyVue("Choose file please", "top", "right", "warning", "warning");
+        this.notifyVue("Choose file please", "warning", "warning");
         return;
       }
       this.isLoad = true;
-      const formdata = new FormData();
-      formdata.append("file", this.file);
-
-      const requestOptions = {
-        method: "POST",
-        body: formdata
-      };
-      try {
-        const response = await fetch(
-          `${url}?description=${this.description}`,
-          requestOptions
-        );
-        const result = await response.json();
-        this.isLoad = false;
-        if (result.success)
-          this.notifyVue(result.messages[0], "top", "right", "done", "success");
-        
+      const result = await uploadPicture(this.file, this.description);  
+      if(result.success){
+        const messages = result.messages.join(' ');
+        this.notifyVue(messages, "done", "success");
+        this.description = this.$refs.file.value = null;
         eventBus.$emit("updatePics");
-      } catch (err) {
-        this.isLoad = false;
-        this.notifyVue("Can't upload file", "top", "right", "warning", "danger");
+      }else{
+        const messages = result.messages.join(' ');
+        this.notifyVue(messages, "warning", "danger");
       }
-      this.description = this.$refs.file.value = null;
-      return;
+      this.isLoad = false;
     },
-    notifyVue(message, verticalAlign, horizontalAlign, icon, type) {
+
+    notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
