@@ -8,7 +8,7 @@
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
       </sidebar-link>
-      <sidebar-link to="/gallery">
+      <sidebar-link to="/mediafiles">
         <md-icon>wallpaper</md-icon>
         <p>Media Files</p>
       </sidebar-link>

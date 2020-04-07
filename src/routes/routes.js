@@ -9,7 +9,7 @@ import Dashboard from "@/pages/Dashboard.vue";
 // import Notifications from "@/pages/Notifications.vue";
 // import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 // import Upload from "@/pages/Upload.vue";
-import Gallery from '@/pages/Gallery';
+import MediaFiles from '@/pages/MediaFiles';
 
 const routes = [
   {
@@ -51,9 +51,9 @@ const routes = [
       //   component: Notifications
       // },
       {
-        path: "gallery",
-        name: "Gallery",
-        component: Gallery
+        path: "mediafiles",
+        name: "Media Files",
+        component: MediaFiles
       },
     ]
   }

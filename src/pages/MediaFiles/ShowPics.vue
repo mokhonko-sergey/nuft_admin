@@ -10,8 +10,8 @@
                 </div>
                 <div class="md-layout-item md-size-25 custom__md-layout-item md-xsmall-size-100">
                     <md-button class='md-primary' @click="$emit('dialog')">
-                        Upload Files
                         <md-icon class="md-size-2x">backup</md-icon>
+                        Upload Files
                     </md-button>
                 </div>
             </div>

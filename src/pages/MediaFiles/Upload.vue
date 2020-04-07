@@ -1,19 +1,19 @@
 <template>
   <md-dialog :md-active.sync="isActive">
-    <md-dialog-title>Upload Files</md-dialog-title>
+    <md-dialog-title>Upload File</md-dialog-title>
       <md-dialog-content>
           <div class="md-layout md-alignment-center md-size-100">
               <div class="md-layout-item md-alignment-space-between md-size-100">
                 <div class="md-layout md-alignment-center md-size-100">
                   <div class="md-layout-item md-size-100 custom__md-layout-item">
-                    <input type='file' ref="fileInput" style='display: none'/>
+                    <input type='file' ref="fileInput" style='display: none' accept="image/*" @change="selectFile"/>
                     <md-button class="md-primary" @click="choseFile()">
-                        Choose file
-                        <md-icon>attach_file</md-icon>
+                      <md-icon>attach_file</md-icon>
+                      Choose file
                     </md-button>
                   </div>
-                  <div class="md-layout-item md-size-100 custom__md-layout-item">
-                    <img src='https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80' alt='images' class="img-preview"/>
+                  <div class="md-layout-item md-size-100 custom__md-layout-item" v-if="fileSrc">
+                    <img :src='fileSrc' alt='images' class="img-preview"/>
                   </div>
                 </div>
                   
@@ -21,21 +21,30 @@
               <div class="md-layout-item md-size-100">
                   <md-field>
                       <md-icon>description</md-icon>
-                      <label>Textarea with Autogrow</label>
+                      <label>Description</label>
                       <md-textarea md-autogrow></md-textarea>
                   </md-field>
               </div>
           </div>
       </md-dialog-content>
       <md-dialog-actions>
-          <md-button class="md-default" @click="$emit('closeDialog')">Close</md-button>
-          <md-button class="md-success" @click="$emit('closeDialog')">Save</md-button>
+          <md-button class="md-default" @click="closeDialog()">
+            <md-icon>close</md-icon>
+            Close
+          </md-button>
+          <md-button class="md-success" @click="upload()">
+            <loading :isActive='uploading'/>
+            <span v-if="!uploading">
+              <md-icon>save</md-icon>
+              Save
+            </span>
+          </md-button>
       </md-dialog-actions>
   </md-dialog>
 </template>
 
 <script>
-// import { MiniLoading } from "@/components/Loading/index.js";
+import { MiniLoading } from "@/components/Loading/index.js";
 import { eventBus } from "../../main";
 import FirebaseApi from "../../services/firebase-api";
 
@@ -47,36 +56,52 @@ export default {
   },
   data() {
     return {
-      // isActive: true,
-      isLoad: false,
+      uploading: false,
       file: null,
+      fileSrc: null,
       description: null
     };
   },
   methods: {
-    selectFile(e) {
-      this.file = this.$refs.fileInput.files[0];
-    },
     choseFile() {
       this.$refs.fileInput.click();
     },
+    selectFile(e) {
+      const file = event.target.files[0];
+			const reader = new FileReader();
+			reader.onload = e => {
+				this.fileSrc = reader.result;
+			}
+			reader.readAsDataURL(file);
+			this.file = file;
+    },
+    closeDialog(){
+      this.clearData();
+      this.$emit('closeDialog')
+    },
     async upload() {
-      if (!this.file) {
-        this.notifyVue("Choose file please", "warning", "warning");
+      if(!this.file){
+        this.notifyVue("Choose file, please!", "warning", "danger");
         return;
       }
-      this.isLoad = true;
+      this.uploading = true;
       const result = await uploadPicture(this.file, this.description);  
       if(result.success){
         const messages = result.messages.join(' ');
-        this.notifyVue(messages, "done", "success");
-        this.description = this.$refs.file.value = null;
+        this.clearData();
         eventBus.$emit("updatePics");
+        this.notifyVue(messages, "done", "success");
       }else{
         const messages = result.messages.join(' ');
         this.notifyVue(messages, "warning", "danger");
       }
-      this.isLoad = false;
+      this.uploading = false;
+      this.$emit('closeDialog')
+      return;
+    },
+
+    clearData() {
+      this.description = this.file = this.fileSrc = this.$refs.fileInput.value = null;
     },
 
     notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {
@@ -84,15 +109,17 @@ export default {
     }
   },
   components: {
-    // loading: MiniLoading
+    loading: MiniLoading
   }
 };
 </script>
 
 <style lang="scss" scoped>
 .img-preview {
-  max-height: 300px;
   width: auto;
+  height: auto;
+  max-height: 300px;
+  max-width: 300px;
 }
 
 .custom__md-layout-item{
