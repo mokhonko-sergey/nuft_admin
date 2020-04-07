@@ -8,11 +8,16 @@
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
       </sidebar-link>
+      <sidebar-link to="/gallery">
+        <md-icon>wallpaper</md-icon>
+        <p>Media Files</p>
+      </sidebar-link>
+
       <!-- <sidebar-link to="/user">
         <md-icon>person</md-icon>
         <p>User Profile</p>
-      </sidebar-link> -->
-      <!-- <sidebar-link to="/table">
+      </sidebar-link>
+      <sidebar-link to="/table">
         <md-icon>content_paste</md-icon>
         <p>Table list</p>
       </sidebar-link>
@@ -24,10 +29,7 @@
         <md-icon>notifications</md-icon>
         <p>Notifications</p>
       </sidebar-link> -->
-      <sidebar-link to="/gallery">
-        <md-icon>cloud_upload</md-icon>
-        <p>Gallery</p>
-      </sidebar-link>
+
     </side-bar>
 
     <div class="main-panel">

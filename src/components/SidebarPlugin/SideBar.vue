@@ -11,12 +11,7 @@
           <img :src="imgLogo" alt="" />
         </div>
       </a>
-
-      <a
-        href="https://www.creative-tim.com/product/vue-material-dashboard"
-        target="_blank"
-        class="simple-text logo-normal"
-      >
+      <a href="#" class="simple-text logo-normal">
         {{ title }}
       </a>
     </div>

@@ -4,30 +4,22 @@
       <nav>
         <ul>
           <li>
-            <a href="https://www.creative-tim.com">Creative Tim</a>
+            <a href="#">Link 1</a>
           </li>
           <li>
-            <a href="https://creative-tim.com/presentation">
-              About Us
-            </a>
+            <a href="#">Link 2</a>
           </li>
           <li>
-            <a href="http://blog.creative-tim.com">
-              Blog
-            </a>
+            <a href="#">Link 3</a>
           </li>
           <li>
-            <a href="https://www.creative-tim.com/license">
-              Licenses
-            </a>
+            <a href="#">Link 4</a>
           </li>
         </ul>
       </nav>
       <div class="copyright text-center">
         &copy; {{ new Date().getFullYear() }}
-        <a href="https://www.creative-tim.com/?ref=mdf-vuejs" target="_blank"
-          >Creative Tim</a
-        >, made with <i class="fa fa-heart heart"></i> for a better web
+        <a href="#">Creative Tim</a>, made with <i class="fa fa-heart heart"></i> for a better web
       </div>
     </div>
   </footer>
