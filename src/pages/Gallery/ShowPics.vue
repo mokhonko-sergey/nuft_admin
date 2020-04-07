@@ -3,8 +3,18 @@
        <loading v-if="isLoad"/>
         <md-card class="md-card-plain" v-else>
           <md-card-header data-background-color="green">
-            <h4 class="title">Table on Plain Background</h4>
-            <p class="category">Here is a subtitle for this table</p>
+            <div class="md-layout md-size-100">
+                <div class="md-layout-item md-size-75 md-xsmall-size-100">
+                    <h4 class="title">Table on Plain Background</h4>
+                    <p class="category">Here is a subtitle for this table</p>
+                </div>
+                <div class="md-layout-item md-size-25 custom__md-layout-item md-xsmall-size-100">
+                    <md-button class='md-primary' @click="$emit('dialog')">
+                        Upload Files
+                        <md-icon class="md-size-2x">backup</md-icon>
+                    </md-button>
+                </div>
+            </div>
           </md-card-header>
           <md-card-content class='images-content'>
             <md-content v-for="img in images" :key="img.id">
@@ -17,7 +27,6 @@
             </md-content>
           </md-card-content>
         </md-card>
-
         <pagination :items="items" @pageQuery="fetchPics"></pagination>
       </div>
 </template>
@@ -32,6 +41,7 @@ const { getPics, delPicture } = new FirebaseApi();
 
 export default {
     data: () => ({
+        showDialog: true,
         isLoad: false,
         itemsOnPage: 25,
         startAt: 0,
@@ -109,5 +119,13 @@ export default {
                 margin: 0 5px 0 0;
             }
         }
+    }
+
+    .custom__md-layout-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin-top: 10px;
     }
 </style>
