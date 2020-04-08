@@ -17,14 +17,17 @@
             </div>
           </md-card-header>
           <md-card-content class='images-content'>
-            <md-content v-for="img in images" :key="img.id">
-                <img :src="img.url" :alt='img.description'/>
-                <div class="img-actions">
-                    <md-button class="md-fab md-btn-fab md-danger" @click="delPic(img.filename)">
-                        <md-icon>delete_outline</md-icon>
-                    </md-button>
+            <div class="image-container" v-for="img in images" :key="img.id">
+                <md-button class="md-fab md-btn-fab md-danger custom__md-btn" @click="delPic(img.filename)">
+                    <md-icon>delete_outline</md-icon>
+                </md-button>
+                <img :src="img.url" :alt='img.description' class='image-container__img'/>
+                <div class="overlay-desc" v-if="img.description">
+                    <div class="overlay-desc__text">
+                        {{ img.description }}
+                    </div>
                 </div>
-            </md-content>
+            </div>
           </md-card-content>
         </md-card>
         <pagination :items="items" @pageQuery="fetchPics"></pagination>
@@ -89,43 +92,72 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .images-content{
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-    }
-
-    .md-content {
-        width: 200px;
-        height: 200px;
-        display: inline-flex;
-        justify-content: center;
-        align-content: center;
-        margin-right: 10px;
-        margin-bottom: 10px;
-        position: relative;
-
-        img {
-            height: 100%;
-            width: auto;
-        }
-
-        .img-actions {
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-
-            & .md-button {
-                margin: 0 5px 0 0;
-            }
-        }
-    }
-
     .custom__md-layout-item {
         display: flex;
         align-items: center;
         justify-content: center;
-
-        margin-top: 10px;
     }
+
+    .images-content{
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .image-container {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        border-radius: 3px;
+        margin: 10px 5px;
+        overflow: hidden;
+        
+        &__img {
+            opacity: 1;
+            display: block;
+            height: 100%;
+            width: 100%;
+            transition: .5s ease;
+            backface-visibility: hidden;
+        }
+
+        
+        .overlay-desc {
+            width: 100%;
+            height: 100%;
+            background-color: rgba($color: #000000, $alpha: 0.7);
+            transition: .5s ease;
+            opacity: 0;
+            
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 18px;
+            color: white;
+
+            &__text {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+            }
+        }
+        
+        &:hover .overlay-desc {
+            opacity: 1;
+        }
+        
+        .custom__md-btn {
+            margin: 0;
+            position: absolute;
+            top: 3px;
+            right: 3px;
+        }
+    }
+
+
+    
 </style>
