@@ -1,31 +1,32 @@
 <template>
   <md-dialog :md-active.sync="isActive">
-    <md-dialog-title>Upload File</md-dialog-title>
+    <md-dialog-title>Upload Files</md-dialog-title>
       <md-dialog-content>
-          <div class="md-layout md-alignment-center md-size-100">
-              <div class="md-layout-item md-alignment-space-between md-size-100">
-                <div class="md-layout md-alignment-center md-size-100">
-                  <div class="md-layout-item md-size-100 custom__md-layout-item">
-                    <input type='file' ref="fileInput" style='display: none' accept="image/*" @change="selectFile"/>
-                    <md-button class="md-primary" @click="choseFile()">
-                      <md-icon>attach_file</md-icon>
-                      Choose file
-                    </md-button>
-                  </div>
-                  <div class="md-layout-item md-size-100 custom__md-layout-item" v-if="fileSrc">
-                    <img :src='fileSrc' alt='images' class="img-preview"/>
-                  </div>
-                </div>
-                  
-              </div>
-              <div class="md-layout-item md-size-100">
-                  <md-field>
-                      <md-icon>description</md-icon>
-                      <label>Description</label>
-                      <md-textarea md-autogrow></md-textarea>
-                  </md-field>
-              </div>
+        <div class="md-layout md-alignment-center md-size-100">
+          
+          <div class="md-layout-item md-size-100 custom__md-layout-item">
+            <input type='file' ref="fileInput" style='display: none' accept="image/*" @change="selectFiles" multiple/>
+            <md-button class="md-primary" @click="choseFile()">
+              <md-icon>attach_file</md-icon>
+              Choose files
+            </md-button>
           </div>
+          
+          <div class="md-layout-item md-size-100 custom__md-layout-item" v-if="filesSrc.length > 0">
+            <div class="image-preview-item" v-for='(fileSrc, index) in filesSrc' :key='index'>
+              <md-button class="md-icon-button md-dense md-danger custom__md-icon-button" @click='removePic(index)'>
+                <md-icon>close</md-icon>
+              </md-button>
+              <img :src='fileSrc' alt='image' class="img-preview"/>
+              <md-field>
+                <md-icon>description</md-icon>
+                <label>Description</label>
+                <md-input v-model="files[index].description"></md-input>
+              </md-field>
+            </div>
+          </div>
+
+        </div>
       </md-dialog-content>
       <md-dialog-actions>
           <md-button class="md-default" @click="closeDialog()">
@@ -57,51 +58,72 @@ export default {
   data() {
     return {
       uploading: false,
-      file: null,
-      fileSrc: null,
-      description: null
+      files: [],
+      filesSrc: []
     };
   },
   methods: {
     choseFile() {
       this.$refs.fileInput.click();
     },
-    selectFile(e) {
-      const file = event.target.files[0];
-			const reader = new FileReader();
-			reader.onload = e => {
-				this.fileSrc = reader.result;
-			}
-			reader.readAsDataURL(file);
-			this.file = file;
+    
+    selectFiles(e) {
+      const files = e.target.files;
+      for(let i = 0; files.length > i; i++){
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.filesSrc.push(reader.result);
+        }
+        reader.readAsDataURL(files[i]);
+      }
+      files.forEach(element => {
+        this.files.push({file: element, description: ''});
+      });
     },
+    
+    removePic(index) {
+      this.filesSrc.splice(index, 1);
+      this.files.splice(index, 1);
+    },
+    
     closeDialog(){
       this.clearData();
       this.$emit('closeDialog')
     },
+
     async upload() {
-      if(!this.file){
-        this.notifyVue("Choose file, please!", "warning", "danger");
+      if(this.files.length === 0){
+        this.notifyVue("Choose files, please!", "warning", "danger");
         return;
       }
+
       this.uploading = true;
-      const result = await uploadPicture(this.file, this.description);  
-      if(result.success){
-        const messages = result.messages.join(' ');
-        this.clearData();
-        eventBus.$emit("updatePics");
-        this.notifyVue(messages, "done", "success");
-      }else{
-        const messages = result.messages.join(' ');
-        this.notifyVue(messages, "warning", "danger");
-      }
+      const queriesArr = [];
+      this.files.forEach(el => {
+        queriesArr.push(uploadPicture(el.file, el.description));
+      })
+      
+      const resArr = await Promise.all(queriesArr);
+      resArr.forEach(el => {
+        if(el.success){
+          const messages = el.messages.join(' ');
+          this.notifyVue(messages, "done", "success");
+        }else{
+          const messages = el.messages.join(' ');
+          this.notifyVue(messages, "warning", "danger");
+        }
+      });
+
       this.uploading = false;
+      this.clearData();
+      eventBus.$emit("updatePics");
       this.$emit('closeDialog')
       return;
     },
 
     clearData() {
-      this.description = this.file = this.fileSrc = this.$refs.fileInput.value = null;
+      this.filesSrc = [];
+      this.files = [];
     },
 
     notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {
@@ -115,16 +137,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.img-preview {
-  width: auto;
-  height: auto;
-  max-height: 300px;
-  max-width: 300px;
+.custom__md-layout-item{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
-.custom__md-layout-item{
-  text-align: center;
-  margin-bottom: 10px;
+.image-preview-item {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+}
+.img-preview {
+  height: 150px;
+  width: 100%;
+}
+
+.custom__md-icon-button{
+  margin: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 </style>
