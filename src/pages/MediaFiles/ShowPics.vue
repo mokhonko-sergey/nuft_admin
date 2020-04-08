@@ -1,7 +1,6 @@
 <template>
    <div class="md-layout-item md-size-100" >
-       <loading v-if="isLoad"/>
-        <md-card class="md-card-plain" v-else>
+        <md-card class="md-card-plain">
           <md-card-header data-background-color="green">
             <div class="md-layout md-size-100">
                 <div class="md-layout-item md-size-75 md-xsmall-size-100">
@@ -17,7 +16,8 @@
             </div>
           </md-card-header>
           <md-card-content class='images-content'>
-            <div class="image-container" v-for="img in images" :key="img.id">
+            <loading v-if="isLoad"/>
+            <div class="image-container" v-for="img in images" :key="img.id" v-else>
                 <md-button class="md-fab md-btn-fab md-danger custom__md-btn" @click="delPic(img.filename)">
                     <md-icon>delete_outline</md-icon>
                 </md-button>
