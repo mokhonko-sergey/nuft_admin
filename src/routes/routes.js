@@ -1,7 +1,8 @@
 import DashboardLayout from "@/pages/Layout/DashboardLayout.vue";
 
+import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard.vue";
-// import UserProfile from "@/pages/UserProfile.vue";
+import UserProfile from "@/pages/UserProfile.vue";
 // import TableList from "@/pages/TableList.vue";
 // import Typography from "@/pages/Typography.vue";
 // import Icons from "@/pages/Icons.vue";
@@ -13,6 +14,11 @@ import MediaFiles from '@/pages/MediaFiles';
 
 const routes = [
   {
+    path: "/login",
+    name: "Login",
+    component: Login
+  },
+  {
     path: "/",
     component: DashboardLayout,
     redirect: "/dashboard",
@@ -22,11 +28,11 @@ const routes = [
         name: "Dashboard",
         component: Dashboard
       },
-      // {
-      //   path: "user",
-      //   name: "User Profile",
-      //   component: UserProfile
-      // },
+      {
+        path: "user",
+        name: "User Profile",
+        component: UserProfile
+      },
       // {
       //   path: "table",
       //   name: "Table List",

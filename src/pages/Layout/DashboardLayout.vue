@@ -13,7 +13,7 @@
         <p>Media Files</p>
       </sidebar-link>
 
-      <!-- <sidebar-link to="/user">
+      <sidebar-link to="/user">
         <md-icon>person</md-icon>
         <p>User Profile</p>
       </sidebar-link>
@@ -28,7 +28,7 @@
       <sidebar-link to="/notifications">
         <md-icon>notifications</md-icon>
         <p>Notifications</p>
-      </sidebar-link> -->
+      </sidebar-link>
 
     </side-bar>
 
