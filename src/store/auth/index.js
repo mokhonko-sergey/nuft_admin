@@ -1,7 +1,7 @@
 import * as firebase from 'firebase';
 export default {
     state: {
-        user: null
+        user: {}
     },
     mutations: {
         setUser(state, payload){
@@ -40,8 +40,14 @@ export default {
                     message: err.message
                 };
             }
+        },
+        checkUserToken(){
+            return false;
         }
     },
     getters: {
+        getUserToken: state => {
+            return state.user.token;
+        }
     }
 }

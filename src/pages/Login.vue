@@ -46,6 +46,7 @@ export default {
                 .then(data => {
                     if(data.success)
                         this.password = this.email = null;
+                        this.$router.push({name: 'Dashboard'});
                 }).catch(err => {
                     console.log(err);
                 })

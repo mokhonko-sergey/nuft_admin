@@ -5,7 +5,7 @@ import * as firebase from 'firebase/app';
 import App from "./App";
 
 // router setup
-import routes from "./routes/routes";
+import router from "./router";
 
 //vuex
 import store from './store';
@@ -20,15 +20,8 @@ import MaterialDashboard from "./material-dashboard";
 
 import Chartist from "chartist";
 
-// configure router
-const router = new VueRouter({
-  mode: 'history',
-  routes, // short for routes: routes
-  linkExactActiveClass: "nav-item active"
-});
 
 Vue.prototype.$Chartist = Chartist;
-
 Vue.use(VueRouter);
 Vue.use(MaterialDashboard);
 Vue.use(GlobalComponents);
