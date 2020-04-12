@@ -24,7 +24,10 @@
                         </div>
                     </div>
                     <div class="md-layout-item md-size-100 text-right">
-                        <md-button class="md-raised md-success" type='submit'>Sign in</md-button>
+                        <md-button class="md-raised md-success" type='submit'>
+                            <loading v-if="isLoading"></loading>
+                            <span v-else>Sign in</span>
+                        </md-button>
                     </div>
                 </md-card-content>
             </md-card>
@@ -34,6 +37,7 @@
 
 <script>
 import * as firebase from 'firebase';
+import { MiniLoading } from '../components/Loading/'
 export default {
     data: () => ({
         isLoading: false,
@@ -42,15 +46,22 @@ export default {
     }),
     methods: {
         login() {
+            this.isLoading = true;
             this.$store.dispatch('signIn', {email: this.email, pass: this.password})
                 .then(data => {
-                    if(data.success)
+                    if(data.success){
                         this.password = this.email = null;
                         this.$router.push({name: 'Dashboard'});
+                    }
+                    this.isLoading = false;                   
                 }).catch(err => {
                     console.log(err);
+                    this.isLoading = false;                   
                 })
         } 
+    },
+    components: {
+        loading: MiniLoading
     }
 }
 </script>

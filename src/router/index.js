@@ -12,9 +12,9 @@ const router =  new VueRouter({
 router.beforeEach((to, from, next) => {
   store.dispatch('checkUserToken')
     .then(result => {
-      if (to.name !== 'Login' && !result) next({ name: 'Login' })
-      else if (to.name === 'Login' && result) next({name: "Dashboard"})
-      else next()
+      if (to.name !== 'Login' && !result) next({ name: 'Login' });
+      else if (to.name === 'Login' && result) next({name: from.name});
+      else next();
     }).catch((err) => {
       console.log(err);
       next({ name: 'Login' });
