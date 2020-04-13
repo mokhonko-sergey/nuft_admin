@@ -2,10 +2,8 @@ export default class FirebaseApi {
     _baseUrl = 'https://us-central1-nuft-kebop.cloudfunctions.net';
 
     // Base methods
-    get = async (url, params) => {
-        const options = {
-            method: 'GET'
-        };
+    _get = async (url, { params, options }) => {
+        params = params || '';
         const res = await fetch (`${this._baseUrl}/${url}${params}`, options);
         if(!res.ok){
             throw new Error(`Could not fetch ${this._baseUrl}/${url}, received ${res.status}`);
@@ -24,7 +22,7 @@ export default class FirebaseApi {
     //Gallery
     getPics = async (itemsOnPage, starAt) => {
         const params = `?itemOnPage=${itemsOnPage}&start=${starAt}`
-        return await this.get('gallery', params);
+        return await this._get('gallery', params);
     };
 
     uploadPicture = async (file, desc) => {
@@ -43,5 +41,15 @@ export default class FirebaseApi {
 
     delPicture = async (itemName) => {
         return await this.del('gallery', itemName);
+    }
+
+    //Auth
+    isAuthorized = async (token) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        const options = {
+            headers: myHeaders
+        }
+        return await this._get('auth/auth', { options });
     }
 };

@@ -1,4 +1,6 @@
 import * as firebase from 'firebase';
+import FirebaseApi from '@/services/firebase-api';
+const { isAuthorized } = new FirebaseApi();
 export default {
     state: {
         user: {}
@@ -42,18 +44,9 @@ export default {
             }
         },
         async checkUserToken({ state }){
-            const myHeaders = new Headers();
-                myHeaders.append("Authorization", `Bearer ${state.user.token}`);
-
-            const options = {
-                method: 'GET',
-                headers: myHeaders,
-            };
-            
             try{
-                const query = await fetch('https://us-central1-nuft-kebop.cloudfunctions.net/auth/auth', options);
-                const result = await query.json();
-                return result.authenticated;
+                const query = await isAuthorized(state.user.token);
+                return query.authenticated;
             }catch(err){
                 return false;
             }
