@@ -24,7 +24,7 @@
 import { eventBus } from "../../main";
 export default {
     props: {
-        items: {
+        pages: {
             type: Number
         }
     },
@@ -32,11 +32,7 @@ export default {
         currentPage: 1,
         itemsOnPage: 25,
     }),
-    computed: {
-        pages() {
-            return Math.ceil(this.items / this.itemsOnPage);
-        },
-    },
+    computed: {},
     methods: {
         startAt(page){
             const start = parseInt(this.itemsOnPage) * (page-1);

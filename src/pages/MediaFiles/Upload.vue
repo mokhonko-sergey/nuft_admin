@@ -34,8 +34,8 @@
             Close
           </md-button>
           <md-button class="md-success" @click="upload()">
-            <loading :isActive='uploading'/>
-            <span v-if="!uploading">
+            <loading v-if="uploading"/>
+            <span v-else>
               <md-icon>save</md-icon>
               Save
             </span>

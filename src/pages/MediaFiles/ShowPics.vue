@@ -30,7 +30,7 @@
             </div>
           </md-card-content>
         </md-card>
-        <pagination :items="items" @pageQuery="fetchPics"></pagination>
+        <pagination :pages="pages" @pageQuery="ifChangePage"></pagination>
       </div>
 </template>
 
@@ -44,13 +44,17 @@ const { getPics, delPicture } = new FirebaseApi();
 
 export default {
     data: () => ({
-        showDialog: true,
         isLoad: false,
         itemsOnPage: 25,
-        startAt: 0,
+        startAt: null,
         items: null,
         images: []
     }),
+    computed: {
+        pages(){
+            return Math.ceil(this.items / this.itemsOnPage);
+        }
+    },
     methods: {
         async fetchPics (itemsOnPage, startAt) {
             this.isLoad = true;
@@ -67,11 +71,19 @@ export default {
                 const index = this.images.findIndex((el) => el.filename === name);
                 this.images.splice(index, 1);
                 this.notifyVue(res.message, "done", "success");
-                // this.fetchPics();
+                
+                this.fetchPics(this.itemsOnPage, this.startAt);
             }else{
                 this.notifyVue(res.message, "warning", "danger");
             }
             this.isLoad = false;
+        },
+
+        ifChangePage(itemsOnPage, startAt){
+            this.itemsOnPage = itemsOnPage;
+            this.startAt = startAt;
+
+            this.fetchPics(itemsOnPage, startAt);
         },
 
         notifyVue(message, icon, type, verticalAlign='top', horizontalAlign="right") {
@@ -106,19 +118,26 @@ export default {
 
     .image-container {
         position: relative;
-        width: 250px;
-        height: 250px;
+        width: 200px;
+        height: 200px;
         border-radius: 3px;
         margin: 10px 5px;
         overflow: hidden;
+
+        img {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 100%;
+            width: auto;
+            -webkit-transform: translate(-50%,-50%);
+                -ms-transform: translate(-50%,-50%);
+                    transform: translate(-50%,-50%);
+        }
         
         &__img {
-            opacity: 1;
-            display: block;
-            height: 100%;
-            width: 100%;
             transition: .5s ease;
-            backface-visibility: hidden;
+            object-fit:cover;
         }
 
         
