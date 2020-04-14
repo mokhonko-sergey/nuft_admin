@@ -3,7 +3,12 @@ import FirebaseApi from '@/services/firebase-api';
 const { isAuthorized } = new FirebaseApi();
 export default {
     state: {
-        user: {}
+        user: {
+            userId: null,
+            token: null,
+            refreshToken: null,
+            expired: null
+        }
     },
     mutations: {
         setUser(state, payload){
@@ -14,7 +19,7 @@ export default {
                 refreshToken,
                 expired
             };
-        }
+        },
     },
     actions: {
         async signIn ({ commit }, {email, pass}){
@@ -43,6 +48,7 @@ export default {
                 };
             }
         },
+        //unused
         async checkUserToken({ state }){
             try{
                 const query = await isAuthorized(state.user.token);
@@ -53,8 +59,8 @@ export default {
         }
     },
     getters: {
-        getUserToken: state => {
-            return state.user.token;
+        getUser: state => {
+            return state.user;
         }
     }
 }

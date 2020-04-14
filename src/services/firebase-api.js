@@ -11,7 +11,7 @@ export default class FirebaseApi {
         return await res.json();
     };
 
-    del = async (url, item) => {
+    _del = async (url, item) => {
         const options = {
             method: "DELETE"
         }
@@ -40,7 +40,7 @@ export default class FirebaseApi {
     }
 
     delPicture = async (itemName) => {
-        return await this.del('gallery', itemName);
+        return await this._del('gallery', itemName);
     }
 
     //Auth
@@ -51,5 +51,5 @@ export default class FirebaseApi {
             headers: myHeaders
         }
         return await this._get('auth/auth', { options });
-    }
+    };
 };

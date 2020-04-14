@@ -9,16 +9,22 @@ const router =  new VueRouter({
   linkExactActiveClass: "nav-item active",
 });
 
-router.beforeEach((to, from, next) => {
-  store.dispatch('checkUserToken')
-    .then(result => {
-      if (to.name !== 'Login' && !result) next({ name: 'Login' });
-      else if (to.name === 'Login' && result) next({name: from.name});
-      else next();
-    }).catch((err) => {
-      console.log(err);
-      next({ name: 'Login' });
-    })
+router.beforeEach(async (to, from, next) => {
+  const { userId, refreshToken, expired } = store.getters.getUser;
+
+  const isExpired = Date.parse(expired) > Date.now();
+
+  // if(!isExpired && expired){
+  //   const query = await store.dispatch('updateUserToken', { refreshToken });
+  //   if(query.success) {
+  //     const { token, refreshToken, expired} = query;
+  //     store.commit('', { token, refreshToken, expired });
+  //   }
+  // }
+
+  (to.name !== 'Login' && !userId && !isExpired) 
+    ? next ({ name: "Login" })
+    : next();
 });
 
 export default router;
