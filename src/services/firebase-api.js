@@ -11,18 +11,18 @@ export default class FirebaseApi {
         return await res.json();
     };
 
-    _del = async (url, item) => {
+    _del = async (url, itemId) => {
         const options = {
             method: "DELETE"
         }
-        const res = await fetch(`${this._baseUrl}/${url}/${item}`, options);
+        const res = await fetch(`${this._baseUrl}/${url}/${itemId}`, options);
         return await res.json();
     } 
 
     //Gallery
     getPics = async (itemsOnPage, starAt) => {
         const params = `?itemOnPage=${itemsOnPage}&start=${starAt}`
-        return await this._get('gallery', params);
+        return await this._get('gallery', { params });
     };
 
     uploadPicture = async (file, desc) => {
@@ -39,8 +39,8 @@ export default class FirebaseApi {
         return await res.json();
     }
 
-    delPicture = async (itemName) => {
-        return await this._del('gallery', itemName);
+    delPicture = async (itemId) => {
+        return await this._del('gallery', itemId);
     }
 
     //Auth
