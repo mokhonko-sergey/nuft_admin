@@ -1,33 +1,39 @@
 <template>
     <div class="md-layout-item md-size-100">
-        <nav-tabs-card>
-          <template slot="content">
-            <span class="md-nav-tabs-title">Users:</span>
-            <md-tabs class="md-success" md-alignment="left">
-              
-              <md-tab id="tab-home" md-label="Active" md-icon="face">
-                <nav-tabs-table :data='activeUsers' @del="deleteUser"></nav-tabs-table>
-              </md-tab>
+      <actions-tab></actions-tab>
+      <nav-tabs-card>
+        <template slot="content">
+          <span class="md-nav-tabs-title">Users:</span>
+          <md-tabs class="md-success" md-alignment="left">
 
-              <md-tab id="tab-pages" md-label="Blocked" md-icon="block">
-                <nav-tabs-table :data="blockedUsers" @del="deleteUser"></nav-tabs-table>
-              </md-tab>
+            <md-tab id="tab-home" md-label="Active" md-icon="face">
+              <nav-tabs-table :data='activeUsers' @del="deleteUser"></nav-tabs-table>
+            </md-tab>
 
-            </md-tabs>
-          </template>
-        </nav-tabs-card>
-      </div>
+            <md-tab id="tab-pages" md-label="Blocked" md-icon="block">
+              <nav-tabs-table :data="blockedUsers" @del="deleteUser"></nav-tabs-table>
+            </md-tab>
+
+          </md-tabs>
+        </template>
+      </nav-tabs-card>
+      <add-user></add-user>
+    </div>
 </template>
 
 <script>
 import NavTabsCard from "./NavTabsCard";
 import NavTabsTable from "./NavTabsTable";
+import ActionsTab from './ActionsTab';
+import AddUser from './AddNewUser';
 import FirebaseApi from '@/services/firebase-api';
 const { getAllUsers, delUser } = new FirebaseApi();
 export default {
     components: {
         NavTabsCard,
-        NavTabsTable
+        NavTabsTable,
+        ActionsTab,
+        AddUser
     },
     data: () => ({
       users: []
