@@ -8,16 +8,22 @@
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
       </sidebar-link>
+
       <sidebar-link to="/mediafiles">
         <md-icon>wallpaper</md-icon>
         <p>Media Files</p>
+      </sidebar-link>
+
+      <sidebar-link to="/users">
+        <md-icon>person</md-icon>
+        <p>Users</p>
       </sidebar-link>
 
       <sidebar-link to="/user">
         <md-icon>person</md-icon>
         <p>User Profile</p>
       </sidebar-link>
-      <sidebar-link to="/table">
+      <!-- <sidebar-link to="/table">
         <md-icon>content_paste</md-icon>
         <p>Table list</p>
       </sidebar-link>
@@ -28,7 +34,7 @@
       <sidebar-link to="/notifications">
         <md-icon>notifications</md-icon>
         <p>Notifications</p>
-      </sidebar-link>
+      </sidebar-link> -->
 
     </side-bar>
 
