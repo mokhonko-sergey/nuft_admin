@@ -11,7 +11,7 @@ import UserProfile from "@/pages/UserProfile.vue";
 // import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 // import Upload from "@/pages/Upload.vue";
 import MediaFiles from '@/pages/MediaFiles';
-import Users from '@/pages/Users';
+import Users from '@/pages/Users/Users';
 
 const routes = [
   {

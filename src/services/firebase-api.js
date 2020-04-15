@@ -52,4 +52,20 @@ export default class FirebaseApi {
         }
         return await this._get('auth/auth', { options });
     };
+
+    //Users
+    getAllUsers = async (token) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        const options = {
+            method: 'GET',
+            headers: myHeaders,
+        };
+        const query = await this._get('auth', { options });
+        if(query.success)
+            return query.result
+        
+        return query.message;
+    };
+    
 };
