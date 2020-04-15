@@ -15,9 +15,9 @@
             <md-icon>block</md-icon>
             <md-tooltip md-direction="top">Block</md-tooltip>
           </md-button>
-          <md-button class="md-just-icon md-simple md-danger">
+          <md-button class="md-just-icon md-simple md-danger" @click="$emit('del', item.uid)">
             <md-icon>close</md-icon>
-            <md-tooltip md-direction="top">Close</md-tooltip>
+            <md-tooltip md-direction="top">Delete</md-tooltip>
           </md-button>
         </md-table-cell>
 

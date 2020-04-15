@@ -11,11 +11,12 @@ export default class FirebaseApi {
         return await res.json();
     };
 
-    _del = async (url, itemId) => {
-        const options = {
-            method: "DELETE"
+    _del = async (url, { options, id }) => {
+        options = {
+            method: "DELETE",
+            ...options
         }
-        const res = await fetch(`${this._baseUrl}/${url}/${itemId}`, options);
+        const res = await fetch(`${this._baseUrl}/${url}/${id}`, options);
         return await res.json();
     } 
 
@@ -67,5 +68,14 @@ export default class FirebaseApi {
         
         return query.message;
     };
-    
+
+    delUser = async (id, token) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        const options = {
+            headers: myHeaders,
+        };
+
+        return await this._del('auth', { options, id });
+    }
 };

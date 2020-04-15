@@ -6,11 +6,11 @@
             <md-tabs class="md-success" md-alignment="left">
               
               <md-tab id="tab-home" md-label="Active" md-icon="face">
-                <nav-tabs-table :data='activeUsers'></nav-tabs-table>
+                <nav-tabs-table :data='activeUsers' @del="deleteUser"></nav-tabs-table>
               </md-tab>
 
               <md-tab id="tab-pages" md-label="Blocked" md-icon="block">
-                <nav-tabs-table :data="blockedUsers"></nav-tabs-table>
+                <nav-tabs-table :data="blockedUsers" @del="deleteUser"></nav-tabs-table>
               </md-tab>
 
             </md-tabs>
@@ -23,7 +23,7 @@
 import NavTabsCard from "./NavTabsCard";
 import NavTabsTable from "./NavTabsTable";
 import FirebaseApi from '@/services/firebase-api';
-const { getAllUsers } = new FirebaseApi();
+const { getAllUsers, delUser } = new FirebaseApi();
 export default {
     components: {
         NavTabsCard,
@@ -38,13 +38,29 @@ export default {
       },
       blockedUsers(){
         return this.users.filter(el => el.disabled === true);
+      },
+      token(){
+        return this.$store.getters.getUser.token;
       }
     },
     methods: {
       async getUsers(){
-        const { token } = this.$store.getters.getUser;
-        const result = await getAllUsers(token);
+        const result = await getAllUsers(this.token);
         this.users = result;
+      },
+      
+      async deleteUser(id){   
+        const result = await delUser(id, this.token);
+        if(result.success){
+          this.notifyVue(result.message, 'done', 'success');
+          this.getUsers();
+          return;
+        }
+        this.notifyVue(result.message, 'warning', 'danger');
+      },
+
+      notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {
+        this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
       }
     },
     created(){
