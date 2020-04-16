@@ -7,11 +7,21 @@
           <md-tabs class="md-success" md-alignment="left">
 
             <md-tab id="tab-home" md-label="Active" md-icon="face">
-              <nav-tabs-table :data='activeUsers' @del="deleteUser"></nav-tabs-table>
+              <nav-tabs-table 
+                :data='activeUsers' 
+                @del="deleteUser" 
+                @blockUser="blockUser"
+                @editUser="editUserData"
+              />
             </md-tab>
 
             <md-tab id="tab-pages" md-label="Blocked" md-icon="block">
-              <nav-tabs-table :data="blockedUsers" @del="deleteUser"></nav-tabs-table>
+              <nav-tabs-table 
+                :data='blockedUsers' 
+                @del="deleteUser" 
+                @blockUser="blockUser"
+                @editUser="editUserData"
+              />
             </md-tab>
 
           </md-tabs>
@@ -54,7 +64,7 @@ export default {
         const result = await getAllUsers(this.token);
         this.users = result;
       },
-      
+
       async deleteUser(id){   
         const result = await delUser(id, this.token);
         if(result.success){
@@ -63,6 +73,14 @@ export default {
           return;
         }
         this.notifyVue(result.message, 'warning', 'danger');
+      },
+
+      blockUser(data){
+        console.log("Block", data);
+      },
+
+      editUserData(data){
+        console.log("Edit", data)
       },
 
       notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {

@@ -42,7 +42,6 @@
 </template>
 
 <script>
-//  let {email, password, displayName, phoneNumber, emailVerified, disabled} = req.body;
 import Dialog from "@/components/Dialog";
 import { MiniLoading } from '@/components/Loading';
 import { eventBus } from "../../main";

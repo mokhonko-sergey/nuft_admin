@@ -18,11 +18,11 @@
         <md-table-cell>{{ item.metadata.lastSignInTime }}</md-table-cell>
         
         <md-table-cell>
-          <md-button class="md-just-icon md-simple md-primary">
+          <md-button class="md-just-icon md-simple md-primary" @click="$emit('editUser', item)">
             <md-icon>edit</md-icon>
             <md-tooltip md-direction="top">Edit</md-tooltip>
           </md-button>
-          <md-button class="md-just-icon md-simple md-default">
+          <md-button class="md-just-icon md-simple md-default" @click="$emit('blockUser', item)">
             <md-icon>block</md-icon>
             <md-tooltip md-direction="top">Block</md-tooltip>
           </md-button>
