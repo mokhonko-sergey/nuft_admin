@@ -11,6 +11,16 @@ export default class FirebaseApi {
         return await res.json();
     };
 
+    _post = async (url, options) => {
+        const reqOptions = {
+            method: "POST",
+            ...options,
+        };
+        
+        const res = await fetch(`${this._baseUrl}/${url}`, reqOptions);
+        return await res.json();
+    };
+
     _del = async (url, { options, id }) => {
         options = {
             method: "DELETE",
@@ -18,7 +28,14 @@ export default class FirebaseApi {
         }
         const res = await fetch(`${this._baseUrl}/${url}/${id}`, options);
         return await res.json();
-    } 
+    }
+
+    _createAuthHeader = (token) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        myHeaders.append('content-type', 'application/json');
+        return myHeaders;
+    };
 
     //Gallery
     getPics = async (itemsOnPage, starAt) => {
@@ -78,4 +95,17 @@ export default class FirebaseApi {
 
         return await this._del('auth', { options, id });
     }
+
+    createNewUser = async (token, user) => {
+        const authHeader = this._createAuthHeader(token);
+        const data = JSON.stringify(user);
+
+        const options = {
+            headers: authHeader,
+            body: data
+        }
+
+        return await this._post('auth', options);
+    };
+
 };

@@ -17,7 +17,7 @@
           </md-tabs>
         </template>
       </nav-tabs-card>
-      <add-user></add-user>
+      <add-user @updatelistOfUsers="getUsers()"></add-user>
     </div>
 </template>
 
