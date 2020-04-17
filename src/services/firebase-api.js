@@ -30,6 +30,16 @@ export default class FirebaseApi {
         return await res.json();
     }
 
+    _put = async (url, { id, options }) => {
+        const reqOptions = {
+            method: "PUT",
+            ...options
+        };
+
+        const res = await fetch(`${this._baseUrl}/${url}/${id}`, reqOptions);
+        return await res.json();
+    };
+
     _createAuthHeader = (token) => {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${token}`);
@@ -94,7 +104,7 @@ export default class FirebaseApi {
         };
 
         return await this._del('auth', { options, id });
-    }
+    };
 
     createNewUser = async (token, user) => {
         const authHeader = this._createAuthHeader(token);
@@ -106,6 +116,20 @@ export default class FirebaseApi {
         }
 
         return await this._post('auth', options);
+    };
+
+    udateUserInfo = async (token, newUserData) => {
+        const authHeader = this._createAuthHeader(token);
+        const data = JSON.stringify(newUserData);
+
+        const options = {
+            headers: authHeader,
+            body: data
+        }
+
+        const id = newUserData.uid;
+
+        return await this._put('auth', { id, options });
     };
 
 };

@@ -37,7 +37,7 @@ import NavTabsTable from "./NavTabsTable";
 import ActionsTab from './ActionsTab';
 import AddUser from './AddNewUser';
 import FirebaseApi from '@/services/firebase-api';
-const { getAllUsers, delUser } = new FirebaseApi();
+const { getAllUsers, delUser, udateUserInfo } = new FirebaseApi();
 export default {
     components: {
         NavTabsCard,
@@ -75,8 +75,25 @@ export default {
         this.notifyVue(result.message, 'warning', 'danger');
       },
 
-      blockUser(data){
-        console.log("Block", data);
+      async blockUser(data){
+        const newUserData = {
+          uid: data.uid,
+          email: data.email,
+          disabled: !data.disabled
+        };
+
+        try{
+          const result = await udateUserInfo(this.token, newUserData);
+          if(result.success){
+            this.notifyVue(result.message, 'done', 'success');
+            this.getUsers();
+            return;
+          }
+          this.notifyVue(result.message, 'warning', 'danger');
+        }catch(err){
+          console.log(err);
+        }
+
       },
 
       editUserData(data){
