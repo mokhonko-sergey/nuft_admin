@@ -130,7 +130,18 @@ export default {
     },
 
     async createUser() {
+      const validatePasswords = this.checkPassword(
+        this.user.password,
+        this.user.confirmPassword
+      );
+
+      if (!validatePasswords.success) {
+        this.notifyVue(validatePasswords.message, "warning", "warning");
+        return;
+      }
+
       this.isLoading = true;
+
       try {
         const query = await createNewUser(this.token, this.user);
 
@@ -152,7 +163,20 @@ export default {
     },
 
     async updateUser() {
+      if (this.user.password) {
+        const validatePasswords = this.checkPassword(
+          this.user.password,
+          this.user.confirmPassword
+        );
+
+        if (!validatePasswords.success) {
+          this.notifyVue(validatePasswords.message, "warning", "warning");
+          return;
+        }
+      }
+
       this.isLoading = true;
+
       try {
         const query = await updateUserInfo(this.token, this.user);
 
@@ -197,6 +221,22 @@ export default {
         confirmPassword: null,
         disabled: false
       };
+    },
+
+    checkPassword(pass1, pass2) {
+      if (!pass1)
+        return {
+          success: false,
+          message: "Password field is empty"
+        };
+
+      if (pass1 !== pass2)
+        return {
+          success: false,
+          message: "Passwords are not equal"
+        };
+
+      return { success: true };
     },
 
     notifyVue(
