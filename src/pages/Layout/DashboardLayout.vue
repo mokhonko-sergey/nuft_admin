@@ -9,6 +9,11 @@
         <p>Dashboard</p>
       </sidebar-link>
 
+      <sidebar-link to="/pages">
+        <md-icon>layers</md-icon>
+        <p>Pages</p>
+      </sidebar-link>
+
       <sidebar-link to="/mediafiles">
         <md-icon>wallpaper</md-icon>
         <p>Media Files</p>
@@ -35,7 +40,6 @@
         <md-icon>notifications</md-icon>
         <p>Notifications</p>
       </sidebar-link> -->
-
     </side-bar>
 
     <div class="main-panel">

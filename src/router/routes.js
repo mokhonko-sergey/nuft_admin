@@ -1,4 +1,3 @@
-
 import DashboardLayout from "@/pages/Layout/DashboardLayout.vue";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard.vue";
@@ -10,8 +9,9 @@ import UserProfile from "@/pages/UserProfile.vue";
 // import Notifications from "@/pages/Notifications.vue";
 // import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 // import Upload from "@/pages/Upload.vue";
-import MediaFiles from '@/pages/MediaFiles';
-import Users from '@/pages/Users/Users';
+import MediaFiles from "@/pages/MediaFiles";
+import Users from "@/pages/Users/Users";
+import Pages from "@/pages/Pages";
 
 const routes = [
   {
@@ -28,6 +28,11 @@ const routes = [
         path: "dashboard",
         name: "Dashboard",
         component: Dashboard
+      },
+      {
+        path: "pages",
+        name: "Pages",
+        component: Pages
       },
       {
         path: "user",
@@ -66,7 +71,7 @@ const routes = [
         path: "users",
         name: "Users",
         component: Users
-      },
+      }
     ]
   }
 ];
