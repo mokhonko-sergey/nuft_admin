@@ -180,7 +180,7 @@
       <div
         class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50"
       >
-        <nav-tabs-card>
+        <!-- <nav-tabs-card>
           <template slot="content">
             <span class="md-nav-tabs-title">Tasks:</span>
             <md-tabs class="md-success" md-alignment="left">
@@ -197,7 +197,7 @@
               </md-tab>
             </md-tabs>
           </template>
-        </nav-tabs-card>
+        </nav-tabs-card> -->
       </div>
     </div>
   </div>
@@ -216,8 +216,6 @@ export default {
   components: {
     StatsCard,
     ChartCard,
-    NavTabsCard,
-    NavTabsTable,
     OrderedTable
   },
   data() {
