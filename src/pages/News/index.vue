@@ -19,7 +19,10 @@
         <md-card-content>
           <nav-tabs-table
             :data="news"
-            :cells="['title', 'created', 'authorId']"
+            :cells="{
+              Title: 'title',
+              'Created Time': 'created'
+            }"
             @edit-item="editItem"
             @delete-item="deleteItem"
           ></nav-tabs-table>
