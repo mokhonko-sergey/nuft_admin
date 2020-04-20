@@ -9,6 +9,11 @@
         <p>Dashboard</p>
       </sidebar-link>
 
+      <sidebar-link to="/news">
+        <md-icon>subject</md-icon>
+        <p>News</p>
+      </sidebar-link>
+
       <sidebar-link to="/mediafiles">
         <md-icon>wallpaper</md-icon>
         <p>Media Files</p>

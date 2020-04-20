@@ -12,6 +12,7 @@ import UserProfile from "@/pages/UserProfile.vue";
 // import Upload from "@/pages/Upload.vue";
 import MediaFiles from '@/pages/MediaFiles';
 import Users from '@/pages/Users/Users';
+import News from "@/pages/News";
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
         path: "dashboard",
         name: "Dashboard",
         component: Dashboard
+      },
+      {
+        path: "news",
+        name: "News",
+        component: News
       },
       {
         path: "user",
