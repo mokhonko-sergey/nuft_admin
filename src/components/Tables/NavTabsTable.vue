@@ -5,19 +5,28 @@
         <md-table-cell v-for="(cell, index) in cells" :key="index">{{
           item[cell]
         }}</md-table-cell>
-        
+
         <md-table-cell>
-          <md-button class="md-just-icon md-simple md-primary">
+          <md-button
+            class="md-just-icon md-simple md-primary"
+            @click="$emit('edit-item', item.id)"
+          >
             <md-icon>edit</md-icon>
             <md-tooltip md-direction="top">Edit</md-tooltip>
           </md-button>
-          <md-button class="md-just-icon md-simple md-primary">
+          <!-- <md-button
+            class="md-just-icon md-simple md-primary"
+            @click="$emit('hide-item', item.id)"
+          >
             <md-icon>visibility</md-icon>
             <md-tooltip md-direction="top">Hide</md-tooltip>
-          </md-button>
-          <md-button class="md-just-icon md-simple md-danger">
-            <md-icon>close</md-icon>
-            <md-tooltip md-direction="top">Close</md-tooltip>
+          </md-button> -->
+          <md-button
+            class="md-just-icon md-simple md-danger"
+            @click="$emit('delete-item', item.id)"
+          >
+            <md-icon>delete</md-icon>
+            <md-tooltip md-direction="top">Delete</md-tooltip>
           </md-button>
         </md-table-cell>
       </md-table-row>

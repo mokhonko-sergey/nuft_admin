@@ -135,4 +135,27 @@ export default class FirebaseApi {
 
     return await this._put("auth", { id, options });
   };
+
+  //News
+  getNews = async (startAt, itemsOnPage) => {
+    const params = `?startFrom=${startAt}&count=${itemsOnPage}`;
+    const options = {
+      method: "GET"
+    };
+    return await this._get("news", { params, options });
+  };
+
+  deleteNews = async (id, token) => {
+    const headers = this._createAuthHeader(token);
+    const options = {
+      headers
+    };
+    const query = await this._del("news", { options, id });
+    if (query.success) return query;
+
+    return {
+      success: false,
+      message: "Can't delete this item"
+    }
+  };
 }
