@@ -138,7 +138,7 @@ export default class FirebaseApi {
 
   //News
   getNews = async (startAt, itemsOnPage) => {
-    const params = `?startFrom=${startAt}&count=${itemsOnPage}`;
+    const params = `?startAt=${startAt}&itemsOnPage=${itemsOnPage}`;
     const options = {
       method: "GET"
     };
@@ -156,6 +156,17 @@ export default class FirebaseApi {
     return {
       success: false,
       message: "Can't delete this item"
-    }
+    };
+  };
+
+  editNews = async (id, newData, token) => {
+    const headers = this._createAuthHeader(token);
+    const data = JSON.stringify(newData);
+    const options = {
+      headers,
+      body: data
+    };
+
+    return await this._put("news", { id, options });
   };
 }

@@ -24,6 +24,7 @@
               'Created Time': 'created'
             }"
             @edit-item="editItem"
+            @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
           ></nav-tabs-table>
         </md-card-content>
@@ -41,7 +42,7 @@
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import FirebaseApi from "@/services/firebase-api";
-const { getNews, deleteNews } = new FirebaseApi();
+const { getNews, deleteNews, editNews } = new FirebaseApi();
 export default {
   components: {
     NavTabsCard,
@@ -68,6 +69,7 @@ export default {
     editItem(id) {
       console.log("Edit", id);
     },
+
     async deleteItem(id) {
       const result = await deleteNews(id, this.token);
       if (result.success) {
@@ -77,9 +79,31 @@ export default {
       }
       this.getAllNews(0, this.itemsOnPage);
     },
+
+    async toggleVisible(item) {
+      const newData = {
+        ...item,
+        visible: !item.visible
+      };
+
+      try {
+        const query = await editNews(item.id, newData, this.token);
+        if (query.success) {
+          this.notifyVue(query.message, "done", "success");
+          await this.getAllNews(0, this.itemsOnPage);
+          return;
+        }
+
+        this.notifyVue(query.message, "warning", "danger");
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
     openDialog() {
       this.isActiveDialog = !this.isActiveDialog;
     },
+
     closeDialog() {
       this.isActiveDialog = !this.isActiveDialog;
     },
