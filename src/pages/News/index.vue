@@ -9,7 +9,7 @@
               <p class="category">Here is a subtitle for this table</p>
             </div>
             <div class="md-layout-item md-size-25 md-xsmall-size-100">
-              <md-button class="md-primary" @click="openDialog()">
+              <md-button class="md-primary" @click="openDialogForNewRecord()">
                 <md-icon> note_add</md-icon>
                 Add news
               </md-button>
@@ -23,7 +23,7 @@
               Title: 'title',
               'Created Time': 'created'
             }"
-            @edit-item="editItem"
+            @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
           ></nav-tabs-table>
@@ -33,7 +33,9 @@
     <dialog-window
       title="Add Post"
       :isActive="isActiveDialog"
+      :action="computedAction"
       @close-dialog="closeDialog()"
+      v-model="selectedItem"
     />
   </div>
 </template>
@@ -53,11 +55,18 @@ export default {
     isActiveDialog: false,
     itemsOnPage: 10,
     news: [],
-    count: null
+    selectedItem: {},
+    count: null,
+    selectedAction: "create"
   }),
   computed: {
     token() {
       return this.$store.getters.getUser.token;
+    },
+    computedAction() {
+      return this.selectedAction == "create"
+        ? this.createRecord
+        : this.editRecord;
     }
   },
   methods: {
@@ -66,8 +75,30 @@ export default {
       this.news = result.data;
       this.count = result.newsCount;
     },
-    editItem(id) {
-      console.log("Edit", id);
+
+    createRecord() {
+      console.log("Crete");
+    },
+
+    async editRecord() {
+      const { id } = this.selectedItem;
+      const newData = {
+        ...this.selectedItem
+      };
+
+      try {
+        const query = await editNews(id, newData, this.token);
+        if (query.success) {
+          this.notifyVue(query.message, "done", "success");
+          await this.getAllNews(0, this.itemsOnPage);
+          this.closeDialog();
+          return;
+        }
+
+        this.notifyVue(query.message, "warning", "danger");
+      } catch (err) {
+        console.error(err);
+      }
     },
 
     async deleteItem(id) {
@@ -100,6 +131,19 @@ export default {
       }
     },
 
+    openDialogForNewRecord() {
+      this.selectedAction = "create";
+      this.selectedItem = {};
+      this.openDialog();
+    },
+
+    openDialogForEditRecord(id) {
+      const item = this.news.find(el => el.id === id);
+      this.selectedItem = item;
+      this.selectedAction = "update";
+      this.openDialog();
+    },
+
     openDialog() {
       this.isActiveDialog = !this.isActiveDialog;
     },
@@ -107,6 +151,7 @@ export default {
     closeDialog() {
       this.isActiveDialog = !this.isActiveDialog;
     },
+
     notifyVue(
       message,
       icon,
