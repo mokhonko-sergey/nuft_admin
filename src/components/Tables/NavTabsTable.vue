@@ -41,7 +41,7 @@
 
           <md-button
             class="md-just-icon md-simple md-danger"
-            @click="$emit('delete-item', item)"
+            @click="$emit('delete-item', item.id)"
           >
             <md-icon>delete</md-icon>
             <md-tooltip md-direction="top">Delete</md-tooltip>
