@@ -18,10 +18,11 @@
         </md-card-header>
         <md-card-content>
           <nav-tabs-table
-            :data="news"
+            :data="transformNewsData"
             :cells="{
               Title: 'title',
-              'Created Time': 'created'
+              'Created Time': 'created',
+              'Updated Time': 'updated'
             }"
             @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
@@ -73,6 +74,15 @@ export default {
       return this.selectedAction == "create"
         ? this.createRecord
         : this.editRecord;
+    },
+    transformNewsData() {
+      return this.news.map(el => {
+        return {
+          ...el,
+          created: this.transformTime(el.created),
+          updated: this.transformTime(el.updated)
+        };
+      });
     }
   },
   methods: {
@@ -185,6 +195,18 @@ export default {
       horizontalAlign = "right"
     ) {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
+    },
+
+    transformTime(time) {
+      if (time) {
+        return new Date(time).toLocaleDateString("ua-UA", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
+
+      return;
     }
   },
   created() {
