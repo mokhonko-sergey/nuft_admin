@@ -44,7 +44,7 @@
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import FirebaseApi from "@/services/firebase-api";
-const { getNews, deleteNews, editNews } = new FirebaseApi();
+const { getNews, deleteNews, editNews, createNews } = new FirebaseApi();
 export default {
   components: {
     NavTabsCard,
@@ -76,8 +76,19 @@ export default {
       this.count = result.newsCount;
     },
 
-    createRecord() {
-      console.log("Crete");
+    async createRecord() {
+      try {
+        const query = await createNews(this.selectedItem, this.token);
+        if (query.success) {
+          this.notifyVue(query.message, "done", "success");
+          await this.getAllNews(0, this.itemsOnPage);
+          this.closeDialog();
+          return;
+        }
+        this.notifyVue(query.message, "warning", "danger");
+      } catch (err) {
+        console.error(err);
+      }
     },
 
     async editRecord() {

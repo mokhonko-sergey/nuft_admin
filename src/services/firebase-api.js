@@ -169,4 +169,14 @@ export default class FirebaseApi {
 
     return await this._put("news", { id, options });
   };
+
+  createNews = async (data, token) => {
+    const headers = this._createAuthHeader(token);
+    const options = {
+      headers,
+      body: JSON.stringify(data)
+    };
+
+    return await this._post("news", options);
+  };
 }
