@@ -16,7 +16,8 @@
         Close
       </md-button>
       <md-button class="md-success" @click="action">
-        Save
+        <loading v-if="isLoading" />
+        <span v-else>Save</span>
       </md-button>
     </template>
   </dialog-window>
@@ -24,6 +25,7 @@
 
 <script>
 import DialogWindow from "@/components/Dialog";
+import { MiniLoading } from "@/components/Loading";
 export default {
   props: {
     isActive: Boolean,
@@ -40,11 +42,11 @@ export default {
           content: "",
           visible: ""
         };
-      },
-      loading: {
-        type: Boolean,
-        default: false
       }
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -56,7 +58,8 @@ export default {
     }
   },
   components: {
-    DialogWindow
+    DialogWindow,
+    loading: MiniLoading
   }
 };
 </script>

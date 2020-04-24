@@ -26,7 +26,8 @@
             @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
-          ></nav-tabs-table>
+          />
+          <loading v-show="isMainLoading" />
         </md-card-content>
       </template>
     </nav-tabs-card>
@@ -34,6 +35,7 @@
       title="Add Post"
       :isActive="isActiveDialog"
       :action="computedAction"
+      :isLoading="isLoading"
       @close-dialog="closeDialog()"
       v-model="selectedItem"
     />
@@ -43,13 +45,15 @@
 <script>
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
+import { MainLoading } from "../../components/Loading";
 import FirebaseApi from "@/services/firebase-api";
 const { getNews, deleteNews, editNews, createNews } = new FirebaseApi();
 export default {
   components: {
     NavTabsCard,
     NavTabsTable,
-    DialogWindow
+    DialogWindow,
+    loading: MainLoading
   },
   data: () => ({
     isActiveDialog: false,
@@ -57,7 +61,9 @@ export default {
     news: [],
     selectedItem: {},
     count: null,
-    selectedAction: "create"
+    selectedAction: "create",
+    isLoading: false,
+    isMainLoading: false
   }),
   computed: {
     token() {
@@ -71,22 +77,28 @@ export default {
   },
   methods: {
     async getAllNews(startAt, count) {
+      this.isMainLoading = true;
       const result = await getNews(startAt, count);
+      this.isMainLoading = false;
       this.news = result.data;
       this.count = result.newsCount;
     },
 
     async createRecord() {
+      this.isLoading = true;
       try {
         const query = await createNews(this.selectedItem, this.token);
         if (query.success) {
+          this.isLoading = false;
           this.notifyVue(query.message, "done", "success");
           await this.getAllNews(0, this.itemsOnPage);
           this.closeDialog();
           return;
         }
+        this.isLoading = false;
         this.notifyVue(query.message, "warning", "danger");
       } catch (err) {
+        this.isLoading = false;
         console.error(err);
       }
     },
@@ -96,18 +108,20 @@ export default {
       const newData = {
         ...this.selectedItem
       };
-
+      this.isLoading = true;
       try {
         const query = await editNews(id, newData, this.token);
         if (query.success) {
+          this.isLoading = false;
           this.notifyVue(query.message, "done", "success");
           await this.getAllNews(0, this.itemsOnPage);
           this.closeDialog();
           return;
         }
-
+        this.isLoading = false;
         this.notifyVue(query.message, "warning", "danger");
       } catch (err) {
+        this.isLoading = false;
         console.error(err);
       }
     },
