@@ -29,7 +29,6 @@
             @delete-item="deleteItem"
             @download-more="downloadMore"
           />
-          <loading v-show="isMainLoading" />
           <div class="more-block" v-if="isMore">
             <md-button class="md-success" @click="downloadMore">
               <loading v-if="isLoading" />
@@ -53,7 +52,7 @@
 <script>
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
-import { MainLoading, MiniLoading } from "../../components/Loading";
+import { MiniLoading } from "../../components/Loading";
 import FirebaseApi from "@/services/firebase-api";
 const { getNews, deleteNews, editNews, createNews } = new FirebaseApi();
 export default {
@@ -70,8 +69,7 @@ export default {
     selectedItem: {},
     count: null,
     selectedAction: "create",
-    isLoading: false,
-    isMainLoading: false
+    isLoading: false
   }),
   computed: {
     token() {
@@ -155,15 +153,17 @@ export default {
       if (result.success) {
         const index = this.news.findIndex(el => el.id === id);
         this.news.splice(index, 1);
+        this.count = this.count - 1;
 
         this.notifyVue(result.message, "done", "success");
       } else {
         this.notifyVue(result.message, "warning", "danger");
+        return;
       }
-      //need fix
+
       if (this.isMore) {
         const newsArr = await this.getNews(this.news.length, 1);
-        newsArr.forEach(el => this.news.push(el));
+        this.news.push(newsArr[0]);
       }
     },
 
