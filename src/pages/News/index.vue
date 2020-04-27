@@ -27,8 +27,15 @@
             @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
+            @download-more="downloadMore"
           />
           <loading v-show="isMainLoading" />
+          <div class="more-block" v-if="isMore">
+            <md-button class="md-success" @click="downloadMore">
+              <loading v-if="isLoading" />
+              <span v-else>Show More</span>
+            </md-button>
+          </div>
         </md-card-content>
       </template>
     </nav-tabs-card>
@@ -46,7 +53,7 @@
 <script>
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
-import { MainLoading } from "../../components/Loading";
+import { MainLoading, MiniLoading } from "../../components/Loading";
 import FirebaseApi from "@/services/firebase-api";
 const { getNews, deleteNews, editNews, createNews } = new FirebaseApi();
 export default {
@@ -54,7 +61,7 @@ export default {
     NavTabsCard,
     NavTabsTable,
     DialogWindow,
-    loading: MainLoading
+    loading: MiniLoading
   },
   data: () => ({
     isActiveDialog: false,
@@ -83,15 +90,16 @@ export default {
           updated: this.transformTime(el.updated)
         };
       });
+    },
+    isMore() {
+      return this.news.length < this.count;
     }
   },
   methods: {
-    async getAllNews(startAt, count) {
-      this.isMainLoading = true;
+    async getNews(startAt, count) {
       const result = await getNews(startAt, count);
-      this.isMainLoading = false;
-      this.news = result.data;
       this.count = result.newsCount;
+      return result.data;
     },
 
     async createRecord() {
@@ -100,8 +108,11 @@ export default {
         const query = await createNews(this.selectedItem, this.token);
         if (query.success) {
           this.isLoading = false;
+
+          const newsArr = await this.getNews(0, 1);
+          this.news.splice(0, 0, newsArr[0]);
+
           this.notifyVue(query.message, "done", "success");
-          await this.getAllNews(0, this.itemsOnPage);
           this.closeDialog();
           return;
         }
@@ -118,13 +129,16 @@ export default {
       const newData = {
         ...this.selectedItem
       };
+      const index = this.news.findIndex(el => el.id === id);
       this.isLoading = true;
       try {
         const query = await editNews(id, newData, this.token);
         if (query.success) {
+          const updatedRecord = await this.getNews(index, 1);
+          this.news.splice(index, 1, updatedRecord[0]);
+
           this.isLoading = false;
           this.notifyVue(query.message, "done", "success");
-          await this.getAllNews(0, this.itemsOnPage);
           this.closeDialog();
           return;
         }
@@ -139,11 +153,18 @@ export default {
     async deleteItem(id) {
       const result = await deleteNews(id, this.token);
       if (result.success) {
+        const index = this.news.findIndex(el => el.id === id);
+        this.news.splice(index, 1);
+
         this.notifyVue(result.message, "done", "success");
       } else {
         this.notifyVue(result.message, "warning", "danger");
       }
-      this.getAllNews(0, this.itemsOnPage);
+      //need fix
+      if (this.isMore) {
+        const newsArr = await this.getNews(this.news.length, 1);
+        newsArr.forEach(el => this.news.push(el));
+      }
     },
 
     async toggleVisible(item) {
@@ -151,12 +172,15 @@ export default {
         ...item,
         visible: !item.visible
       };
+      const index = this.news.findIndex(el => el.id === item.id);
 
       try {
         const query = await editNews(item.id, newData, this.token);
         if (query.success) {
+          const arrNews = await this.getNews(index, 1);
+          this.news.splice(index, 1, arrNews[0]);
+
           this.notifyVue(query.message, "done", "success");
-          await this.getAllNews(0, this.itemsOnPage);
           return;
         }
 
@@ -177,6 +201,14 @@ export default {
       this.selectedItem = Object.assign({}, item);
       this.selectedAction = "update";
       this.openDialog();
+    },
+
+    async downloadMore() {
+      this.isLoading = true;
+      const startItem = this.news.length;
+      const nextNews = await this.getNews(startItem, this.itemsOnPage);
+      nextNews.forEach(el => this.news.push(el));
+      this.isLoading = false;
     },
 
     openDialog() {
@@ -209,8 +241,17 @@ export default {
       return;
     }
   },
-  created() {
-    this.getAllNews(0, this.itemsOnPage);
+  async created() {
+    const newsArr = await this.getNews(0, this.itemsOnPage);
+    newsArr.forEach(el => this.news.push(el));
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.more-block {
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+}
+</style>
