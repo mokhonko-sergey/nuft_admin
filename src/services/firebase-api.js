@@ -5,11 +5,6 @@ export default class FirebaseApi {
   _get = async (url, { params, options }) => {
     params = params || "";
     const res = await fetch(`${this._baseUrl}/${url}${params}`, options);
-    if (!res.ok) {
-      throw new Error(
-        `Could not fetch ${this._baseUrl}/${url}, received ${res.status}`
-      );
-    }
     return await res.json();
   };
 
@@ -178,5 +173,13 @@ export default class FirebaseApi {
     };
 
     return await this._post("news", options);
+  };
+
+  search = async (q, startAt, itemsOnPage) => {
+    const params = `?startAt=${startAt}&itemsOnPage=${itemsOnPage}&q=${q}`;
+    const options = {
+      method: "GET"
+    };
+    return await this._get("news", { params, options });
   };
 }
