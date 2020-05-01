@@ -37,6 +37,8 @@ export default class FirebaseApi {
     return await res.json();
   };
 
+  // =================================================================//
+
   _createAuthHeader = token => {
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token}`);

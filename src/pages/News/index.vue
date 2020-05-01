@@ -64,8 +64,9 @@
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
-import FirebaseApi from "@/services/firebase-api";
-const { getNews, deleteNews, editNews, createNews, search } = new FirebaseApi();
+import { News } from "@/services/index";
+const { getNews, deleteNews, editNews, createNews, search } = new News();
+
 export default {
   components: {
     NavTabsCard,
