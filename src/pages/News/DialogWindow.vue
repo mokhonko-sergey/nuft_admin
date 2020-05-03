@@ -40,7 +40,7 @@ export default {
         return {
           title: "",
           content: "",
-          visible: ""
+          visible: true
         };
       }
     },

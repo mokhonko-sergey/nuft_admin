@@ -67,6 +67,15 @@ import { MiniLoading, MainLoading } from "../../components/Loading";
 import { News } from "@/services/index";
 const { getNews, deleteNews, editNews, createNews, search } = new News();
 
+// class CreateNews {
+//   constructor(news) {
+//     this.content = news.content;
+//     this.description = news.description;
+//     this.title = news.title;
+//     this.visible = news.visible;
+//   }
+// }
+
 export default {
   components: {
     NavTabsCard,
@@ -202,7 +211,9 @@ export default {
 
     openDialogForNewRecord() {
       this.selectedAction = "create";
-      this.selectedItem = {};
+      this.selectedItem = {
+        visible: true
+      };
       this.openDialog();
     },
 
