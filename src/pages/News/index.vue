@@ -112,10 +112,6 @@ export default {
     }
   },
   methods: {
-    async getNews(startAt, count) {
-      return await getNews(startAt, count);
-    },
-
     async createRecord() {
       this.isLoading = true;
       try {
@@ -123,7 +119,7 @@ export default {
         if (query.success) {
           this.isLoading = false;
 
-          const news = await this.getNews(0, 1);
+          const news = await getNews(0, 1);
           this.news.splice(0, 0, news.data[0]);
 
           this.notifyVue(query.message, "done", "success");
@@ -148,7 +144,7 @@ export default {
       try {
         const query = await editNews(id, newData, this.token);
         if (query.success) {
-          const updatedRecord = await this.getNews(index, 1);
+          const updatedRecord = await getNews(index, 1);
           this.news.splice(index, 1, updatedRecord.data[0]);
 
           this.isLoading = false;
@@ -178,8 +174,8 @@ export default {
       }
 
       if (this.isMore) {
-        const newsArr = await this.getNews(this.news.length, 1);
-        this.news.push(newsArr[0]);
+        const newsArr = await getNews(this.news.length, 1);
+        this.createNewsData(newsArr);
       }
     },
 
@@ -193,7 +189,7 @@ export default {
       try {
         const query = await editNews(item.id, newData, this.token);
         if (query.success) {
-          const news = await this.getNews(index, 1);
+          const news = await getNews(index, 1);
           this.news.splice(index, 1, news.data[0]);
 
           this.notifyVue(query.message, "done", "success");
@@ -226,7 +222,7 @@ export default {
       if (this.searchValue) {
         next = await search(this.searchValue, startItem, this.itemsOnPage);
       } else {
-        next = await this.getNews(startItem, this.itemsOnPage);
+        next = await getNews(startItem, this.itemsOnPage);
       }
       this.isLoading = false;
       this.createNewsData(next);
@@ -295,7 +291,7 @@ export default {
     }
   },
   async created() {
-    const news = await this.getNews(0, this.itemsOnPage);
+    const news = await getNews(0, this.itemsOnPage);
     this.createNewsData(news);
   }
 };
