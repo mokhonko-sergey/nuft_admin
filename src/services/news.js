@@ -1,8 +1,8 @@
 import { HttpMethods, createAuthHeader } from "./http-methods";
 
-export default class News {
+export default class News extends HttpMethods {
   constructor() {
-    this.httpMethods = new HttpMethods();
+    super();
   }
 
   getNews = async (startAt, itemsOnPage) => {
@@ -10,7 +10,7 @@ export default class News {
     const options = {
       method: "GET"
     };
-    return await this.httpMethods._get("news", { params, options });
+    return await this._get("news", { params, options });
   };
 
   deleteNews = async (id, token) => {
@@ -18,7 +18,7 @@ export default class News {
     const options = {
       headers
     };
-    const query = await this.httpMethods._del("news", { options, id });
+    const query = await this._del("news", { options, id });
     if (query.success) return query;
 
     return {
@@ -35,7 +35,7 @@ export default class News {
       body: data
     };
 
-    return await this.httpMethods._put("news", { id, options });
+    return await this._put("news", { id, options });
   };
 
   createNews = async (data, token) => {
@@ -45,7 +45,7 @@ export default class News {
       body: JSON.stringify(data)
     };
 
-    return await this.httpMethods._post("news", options);
+    return await this._post("news", options);
   };
 
   search = async (q, startAt, itemsOnPage) => {
@@ -53,6 +53,6 @@ export default class News {
     const options = {
       method: "GET"
     };
-    return await this.httpMethods._get("news", { params, options });
+    return await this._get("news", { params, options });
   };
 }
