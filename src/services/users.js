@@ -1,8 +1,8 @@
 import { HttpMethods, createAuthHeader } from "./http-methods";
 
-export default class Users {
+export default class Users extends HttpMethods {
   constructor() {
-    this.httpMethods = new HttpMethods();
+    super();
   }
 
   getAllUsers = async token => {
@@ -11,7 +11,7 @@ export default class Users {
       method: "GET",
       headers: authHeader
     };
-    const query = await this.httpMethods._get("auth", { options });
+    const query = await this._get("auth", { options });
     if (query.success) return query.result;
 
     return query.message;
@@ -23,7 +23,7 @@ export default class Users {
       headers: authHeader
     };
 
-    return await this.httpMethods._del("auth", { options, id });
+    return await this._del("auth", { options, id });
   };
 
   createNewUser = async (token, user) => {
@@ -35,7 +35,7 @@ export default class Users {
       body: data
     };
 
-    return await this.httpMethods._post("auth", options);
+    return await this._post("auth", options);
   };
 
   updateUserInfo = async (token, newUserData) => {
@@ -49,6 +49,6 @@ export default class Users {
 
     const id = newUserData.uid;
 
-    return await this.httpMethods._put("auth", { id, options });
+    return await this._put("auth", { id, options });
   };
 }

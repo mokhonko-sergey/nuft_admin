@@ -1,14 +1,14 @@
 import { HttpMethods, createAuthHeader } from "./http-methods";
 
-export default class Auth {
+export default class Auth extends HttpMethods {
   constructor() {
-    this.httpMethods = new HttpMethods();
+    super();
   }
 
   isAuthorized = async token => {
     const headers = createAuthHeader(token);
     const options = { headers };
 
-    return await this.httpMethods._get("auth/auth", { options });
+    return await this._get("auth/auth", { options });
   };
 }
