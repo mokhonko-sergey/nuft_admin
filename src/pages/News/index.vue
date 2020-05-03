@@ -144,8 +144,7 @@ export default {
       try {
         const query = await editNews(id, newData, this.token);
         if (query.success) {
-          const updatedRecord = await getNews(index, 1);
-          this.news.splice(index, 1, updatedRecord.data[0]);
+          this.news.splice(index, 1, newData);
 
           this.isLoading = false;
           this.notifyVue(query.message, "done", "success");
@@ -189,8 +188,7 @@ export default {
       try {
         const query = await editNews(item.id, newData, this.token);
         if (query.success) {
-          const news = await getNews(index, 1);
-          this.news.splice(index, 1, news.data[0]);
+          this.news.splice(index, 1, newData);
 
           this.notifyVue(query.message, "done", "success");
           return;
