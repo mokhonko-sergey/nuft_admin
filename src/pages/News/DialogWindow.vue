@@ -5,6 +5,7 @@
         <label>Title</label>
         <md-input v-model="value.title"></md-input>
       </md-field>
+      <file-upload :isMultiple="false" />
       <md-field>
         <label>Textarea</label>
         <md-textarea v-model="value.content" md-counter="80"></md-textarea>
@@ -25,6 +26,7 @@
 
 <script>
 import DialogWindow from "@/components/Dialog";
+import FileUpload from "@/components/FileUpload";
 import { MiniLoading } from "@/components/Loading";
 export default {
   props: {
@@ -59,7 +61,8 @@ export default {
   },
   components: {
     DialogWindow,
-    loading: MiniLoading
+    loading: MiniLoading,
+    FileUpload
   }
 };
 </script>
