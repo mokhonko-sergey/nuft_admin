@@ -5,7 +5,14 @@
         <label>Title</label>
         <md-input v-model="value.title"></md-input>
       </md-field>
-      <file-upload :isMultiple="false" />
+      <file-upload
+        :isMultiple="false"
+        @selected-files="
+          value => {
+            this.value.files = value;
+          }
+        "
+      />
       <md-field>
         <label>Textarea</label>
         <md-textarea v-model="value.content" md-counter="80"></md-textarea>

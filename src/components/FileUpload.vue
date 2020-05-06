@@ -91,6 +91,15 @@ export default {
       this.filesSrc.splice(index, 1);
       this.files.splice(index, 1);
     }
+  },
+
+  watch: {
+    files: {
+      deep: true,
+      handler(value){
+        this.$emit("selected-files", value);
+      }
+    }
   }
 };
 </script>

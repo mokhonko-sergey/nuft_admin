@@ -65,7 +65,14 @@ import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
 import { News } from "@/services/index";
-const { getNews, deleteNews, editNews, createNews, search } = new News();
+const {
+  getNews,
+  deleteNews,
+  editNews,
+  createNews,
+  search,
+  uploadTitlePhoto
+} = new News();
 
 export default {
   components: {
@@ -113,25 +120,52 @@ export default {
   },
   methods: {
     async createRecord() {
+      const { title, content, visible, files } = this.selectedItem;
       this.isLoading = true;
+      let query;
+
       try {
-        const query = await createNews(this.selectedItem, this.token);
-        if (query.success) {
-          this.isLoading = false;
+        query = await createNews(
+          { title, content, visible, files },
+          this.token
+        );
 
-          const news = await getNews(0, 1);
-          this.news.splice(0, 0, news.data[0]);
-
-          this.notifyVue(query.message, "done", "success");
-          this.closeDialog();
+        if (!query.success) {
+          this.notifyVue(query.message, "warning", "danger");
+          this.isLoading = true;
           return;
         }
+      } catch (err) {
+        console.error(err);
+        this.notifyVue(
+          "Can't save news. Try again later.",
+          "warning",
+          "danger"
+        );
         this.isLoading = false;
-        this.notifyVue(query.message, "warning", "danger");
+        return;
+      }
+
+      try {
+        const uploadFile = await uploadTitlePhoto(query.key, files[0].file);
+        if (!uploadFile.success) {
+          this.notifyVue(query.message, "warning", "danger");
+        }
       } catch (err) {
         this.isLoading = false;
+        this.notifyVue(
+          "Somesing gone wrong. Cant upload photo",
+          "warning",
+          "danger"
+        );
         console.error(err);
       }
+
+      this.isLoading = false;
+      this.notifyVue(query.message, "done", "success");
+      const news = await getNews(0, 1);
+      this.news = [news.data[0], ...this.news];
+      this.closeDialog();
     },
 
     async editRecord() {
