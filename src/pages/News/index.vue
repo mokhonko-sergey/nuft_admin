@@ -49,6 +49,7 @@
         </md-card-content>
       </template>
     </nav-tabs-card>
+    <!-- Dialog Window -->
     <dialog-window
       title="Add Post"
       :isActive="isActiveDialog"
@@ -75,6 +76,7 @@ const {
 } = new News();
 
 export default {
+  name: "News",
   components: {
     NavTabsCard,
     NavTabsTable,
@@ -120,15 +122,13 @@ export default {
   },
   methods: {
     async createRecord() {
-      const { title, content, visible, files } = this.selectedItem;
+      const { title, content, visible, photo } = this.selectedItem;
       this.isLoading = true;
       let query;
 
+      //Create record
       try {
-        query = await createNews(
-          { title, content, visible, files },
-          this.token
-        );
+        query = await createNews({ title, content, visible }, this.token);
 
         if (!query.success) {
           this.notifyVue(query.message, "warning", "danger");
@@ -146,19 +146,22 @@ export default {
         return;
       }
 
-      try {
-        const uploadFile = await uploadTitlePhoto(query.key, files[0].file);
-        if (!uploadFile.success) {
-          this.notifyVue(query.message, "warning", "danger");
+      // Upload file
+      if (photo.file) {
+        try {
+          const uploadFile = await uploadTitlePhoto(query.key, photo.file);
+          if (!uploadFile.success) {
+            this.notifyVue(query.message, "warning", "danger");
+          }
+        } catch (err) {
+          this.isLoading = false;
+          this.notifyVue(
+            "Somesing gone wrong. Cant upload file",
+            "warning",
+            "danger"
+          );
+          console.error(err);
         }
-      } catch (err) {
-        this.isLoading = false;
-        this.notifyVue(
-          "Somesing gone wrong. Cant upload photo",
-          "warning",
-          "danger"
-        );
-        console.error(err);
       }
 
       this.isLoading = false;
@@ -237,6 +240,7 @@ export default {
     openDialogForNewRecord() {
       this.selectedAction = "create";
       this.selectedItem = {
+        isNew: true,
         visible: true
       };
       this.openDialog();
