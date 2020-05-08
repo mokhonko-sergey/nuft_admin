@@ -65,7 +65,7 @@
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
-import { News } from "@/services/index";
+import { News, Gallery } from "@/services/index";
 const {
   getNews,
   deleteNews,
@@ -74,6 +74,7 @@ const {
   search,
   uploadTitlePhoto
 } = new News();
+const { delPicture } = new Gallery();
 
 export default {
   name: "News",
@@ -197,9 +198,20 @@ export default {
     },
 
     async deleteItem(id) {
+      const index = this.news.findIndex(el => el.id === id);
+      const item = this.news[index];
+      // delete title image
+      if (
+        item.hasOwnProperty("photo") &&
+        item.photo.hasOwnProperty("filename")
+      ) {
+        const filename = item.photo.filename;
+        delPicture(filename).catch(err => console.log(err));
+      }
+
+      // delete news from DB
       const result = await deleteNews(id, this.token);
       if (result.success) {
-        const index = this.news.findIndex(el => el.id === id);
         this.news.splice(index, 1);
         this.count = this.count - 1;
 
