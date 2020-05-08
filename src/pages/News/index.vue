@@ -123,7 +123,7 @@ export default {
   },
   methods: {
     async createRecord() {
-      const { title, content, visible, photo } = this.selectedItem;
+      const { title, content, visible } = this.selectedItem;
       this.isLoading = true;
       let query;
 
@@ -148,9 +148,15 @@ export default {
       }
 
       // Upload file
-      if (photo.file) {
+      if (
+        this.selectedItem.hasOwnProperty("photo") &&
+        this.selectedItem.photo.hasOwnProperty("file")
+      ) {
         try {
-          const uploadFile = await uploadTitlePhoto(query.key, photo.file);
+          const uploadFile = await uploadTitlePhoto(
+            query.key,
+            this.selectedItem.photo.file
+          );
           if (!uploadFile.success) {
             this.notifyVue(query.message, "warning", "danger");
           }
