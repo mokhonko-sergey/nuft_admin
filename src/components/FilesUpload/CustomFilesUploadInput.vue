@@ -25,7 +25,10 @@ export default {
       default: false
     },
     value: {
-      type: Array
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
 
@@ -34,7 +37,7 @@ export default {
       if (this.isMultiple) {
         return true;
       }
-      if (this.value.length === 0) {
+      if (!this.value || this.value.length === 0) {
         return true;
       } else {
         return false;

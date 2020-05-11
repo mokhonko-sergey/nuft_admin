@@ -4,8 +4,8 @@
       <custom-files-upload-input :isMultiple="isMultiple" v-model="files" />
     </div>
     <photo-preview
-      :filesUrl="filesSrc"
-      @delete-image="index => files.splice(index, 1)"
+      :filesUrl="filesUrl"
+      @delete-image="index => filesUrl.splice(index, 1)"
     />
   </div>
 </template>
@@ -19,26 +19,25 @@ export default {
     isMultiple: {
       type: Boolean,
       default: false
+    },
+    filesUrl: { //here ?
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
 
   data: () => ({
-    files: []
+    files: [] //here ?
   }),
 
-  computed: {
-    filesSrc() {
-      return this.files.map(el => el.url);
-    }
-  },
-
   watch: {
-    files: {
-      deep: true,
-      handler() {
+    filesUrl: {
+      handler(value) {
         this.isMultiple
-          ? this.$emit("choosed-files", this.files)
-          : this.$emit("choosed-files", this.files[0]);
+          ? this.$emit("choosed-files", value) // here ?
+          : this.$emit("choosed-files", value[0]); //here ?
       }
     }
   },

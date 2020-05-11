@@ -7,18 +7,15 @@
       </md-field>
 
       <!-- Upload File  -->
-      <files-upload
-        :isMultiple="false"
-        @choosed-files="data => (value.photo = data)"
-      />
-      <!-- <div class="preview-container">
-        <img
-          v-if="!value.isNew"
-          :src="value.photo.url"
-          class="img-preview"
-          title="Foto Title"
-        />
-      </div> -->
+      <div class="md-layout md-alignment-center md-size-100">
+        <div class="md-layout-item md-size-100 custom__md-layout-item">
+          <custom-files-upload-input :isMultiple="false" v-model="files" />
+        </div>
+
+        <div class="md-layout-item md-size-100 custom__md-layout-item">
+          <photo-preview v-model="files" :isDescription="false" />
+        </div>
+      </div>
 
       <md-field>
         <label>Textarea</label>
@@ -41,7 +38,7 @@
 <script>
 import DialogWindow from "@/components/Dialog";
 import { MiniLoading } from "@/components/Loading";
-import FilesUpload from "@/components/FilesUpload";
+import { CustomFilesUploadInput, PhotoPreview } from "@/components/FilesUpload";
 export default {
   name: "DialogWindowForNews",
   props: {
@@ -54,12 +51,7 @@ export default {
     value: {
       type: Object,
       default() {
-        return {
-          title: "",
-          content: "",
-          visible: true,
-          photo: ""
-        };
+        return {};
       }
     },
     isLoading: {
@@ -68,22 +60,41 @@ export default {
     }
   },
 
+  data: () => ({
+    files: []
+  }),
+
+  computed: {
+    filesArr() {
+      if (this.value.hasOwnProperty("photo")) {
+        const item = this.value.photo;
+        return Array.isArray(item) ? item : [item];
+      }
+      return [];
+    }
+  },
+
   watch: {
     value: {
       deep: true,
-      handler(value) {
-        this.$emit("input", value);
+      handler(val) {
+        this.files = this.filesArr;
+        this.$emit("input", val);
       }
     },
-    files: function() {
-      this.value.photo = this.files[0];
+    files: {
+      deep: true,
+      handler(val) {
+        this.value.photo = val;
+      }
     }
   },
 
   components: {
     DialogWindow,
     loading: MiniLoading,
-    FilesUpload
+    CustomFilesUploadInput,
+    PhotoPreview
   }
 };
 </script>

@@ -258,7 +258,6 @@ export default {
     openDialogForNewRecord() {
       this.selectedAction = "create";
       this.selectedItem = {
-        isNew: true,
         visible: true
       };
       this.openDialog();
