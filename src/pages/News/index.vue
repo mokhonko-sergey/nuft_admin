@@ -77,8 +77,12 @@ const {
 const { delPicture } = new Gallery();
 
 //Functions
+const isItemHasPhoto = item => {
+  return item.hasOwnProperty("photo") && item.photo.length > 0;
+};
+
 const updateImage = async item => {
-  if (item.hasOwnProperty("photo") && item.photo.length > 0) {
+  if (isItemHasPhoto(item)) {
     try {
       item.photo[0].hasOwnProperty("file")
         ? await uploadTitlePhoto(item.id, item.photo[0].file)
@@ -195,14 +199,20 @@ export default {
       this.isLoading = true;
 
       //delete image
-      if (item.hasOwnProperty("photo") && item.photo.hasOwnProperty("url")) {
-        newData.photo[0].url !== item.photo.url
-          ? await deleteImage(this.news[index])
+      const isNewsHasPhoto = item.hasOwnProperty("photo");
+      const isEqualUrl =
+        isNewsHasPhoto && isItemHasPhoto(newData)
+          ? newData.photo[0].url !== item.photo.url
           : false;
+
+      if (!isItemHasPhoto(newData) && isNewsHasPhoto) {
+        await deleteImage(item);
+      } else {
+        isEqualUrl ? await deleteImage(item) : false;
       }
 
+      //update post
       try {
-        //update post
         const query = await editNews(id, newData, this.token);
         //update image
         await updateImage(this.selectedItem);
