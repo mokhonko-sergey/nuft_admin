@@ -8,11 +8,11 @@
 
       <!-- Upload File  -->
       <div class="md-layout md-alignment-center md-size-100">
-        <div class="md-layout-item md-size-100 custom__md-layout-item">
+        <div class="md-layout-item md-size-100">
           <custom-files-upload-input :isMultiple="false" v-model="files" />
         </div>
 
-        <div class="md-layout-item md-size-100 custom__md-layout-item">
+        <div class="md-layout-item md-size-100">
           <photo-preview v-model="files" :isDescription="false" />
         </div>
       </div>

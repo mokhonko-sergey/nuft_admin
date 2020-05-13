@@ -76,6 +76,32 @@ const {
 } = new News();
 const { delPicture } = new Gallery();
 
+//Functions
+const updateImage = async item => {
+  if (item.hasOwnProperty("photo") && item.photo.length > 0) {
+    try {
+      item.photo[0].hasOwnProperty("file")
+        ? await uploadTitlePhoto(item.id, item.photo[0].file)
+        : false;
+    } catch (err) {
+      console.error(err);
+      this.notifyVue("Image did not update", "warning", "danger");
+    }
+  }
+  return;
+};
+
+const deleteImage = async item => {
+  if (item.hasOwnProperty("photo") && item.photo.hasOwnProperty("filename")) {
+    const filename = item.photo.filename;
+    try {
+      await delPicture(filename);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
+
 export default {
   name: "News",
   components: {
@@ -148,28 +174,8 @@ export default {
       }
 
       // Upload file
-      if (
-        this.selectedItem.hasOwnProperty("photo") &&
-        this.selectedItem.photo.hasOwnProperty("file")
-      ) {
-        try {
-          const uploadFile = await uploadTitlePhoto(
-            query.key,
-            this.selectedItem.photo.file
-          );
-          if (!uploadFile.success) {
-            this.notifyVue(query.message, "warning", "danger");
-          }
-        } catch (err) {
-          this.isLoading = false;
-          this.notifyVue(
-            "Somesing gone wrong. Cant upload file",
-            "warning",
-            "danger"
-          );
-          console.error(err);
-        }
-      }
+
+      await updateImage({ ...this.selectedItem, id: query.key }); ///check
 
       this.isLoading = false;
       this.notifyVue(query.message, "done", "success");
@@ -183,44 +189,50 @@ export default {
       const newData = {
         ...this.selectedItem
       };
-      const index = this.news.findIndex(el => el.id === id);
-      this.isLoading = true;
-      try {
-        const query = await editNews(id, newData, this.token);
-        if (query.success) {
-          this.news.splice(index, 1, newData);
 
-          this.isLoading = false;
-          this.notifyVue(query.message, "done", "success");
-          this.closeDialog();
-          return;
+      const index = this.news.findIndex(el => el.id === id);
+      const item = this.news[index];
+      this.isLoading = true;
+
+      //delete image
+      if (item.hasOwnProperty("photo") && item.photo.hasOwnProperty("url")) {
+        newData.photo[0].url !== item.photo.url
+          ? await deleteImage(this.news[index])
+          : false;
+      }
+
+      try {
+        //update post
+        const query = await editNews(id, newData, this.token);
+        //update image
+        await updateImage(this.selectedItem);
+
+        if (query.success) {
+          const updatedNewsData = await getNews(index, 1);
+          this.news.splice(index, 1, updatedNewsData.data[0]);
+          this.notifyVue("News updated", "done", "success");
+        } else {
+          this.notifyVue(query.message, "warning", "danger");
         }
-        this.isLoading = false;
-        this.notifyVue(query.message, "warning", "danger");
       } catch (err) {
-        this.isLoading = false;
+        this.notifyVue("Can't update news", "warning", "danger");
         console.error(err);
       }
+
+      this.isLoading = false;
+      this.closeDialog();
     },
 
     async deleteItem(id) {
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
-      // delete title image
-      if (
-        item.hasOwnProperty("photo") &&
-        item.photo.hasOwnProperty("filename")
-      ) {
-        const filename = item.photo.filename;
-        delPicture(filename).catch(err => console.log(err));
-      }
-
+      // delete image
+      await deleteImage(item);
       // delete news from DB
       const result = await deleteNews(id, this.token);
       if (result.success) {
         this.news.splice(index, 1);
         this.count = this.count - 1;
-
         this.notifyVue(result.message, "done", "success");
       } else {
         this.notifyVue(result.message, "warning", "danger");
