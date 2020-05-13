@@ -16,11 +16,7 @@
           <photo-preview v-model="files" :isDescription="false" />
         </div>
       </div>
-
-      <md-field>
-        <label>Textarea</label>
-        <md-textarea v-model="value.content" md-counter="80"></md-textarea>
-      </md-field>
+      <vue-editor v-model="value.content" />
       <md-switch v-model="value.visible" class="md-primary">Visible</md-switch>
     </template>
     <template slot="actions">
@@ -39,6 +35,7 @@
 import DialogWindow from "@/components/Dialog";
 import { MiniLoading } from "@/components/Loading";
 import { CustomFilesUploadInput, PhotoPreview } from "@/components/FilesUpload";
+import { VueEditor } from "vue2-editor";
 export default {
   name: "DialogWindowForNews",
   props: {
@@ -62,6 +59,12 @@ export default {
 
   data: () => ({
     files: []
+    // editorSettings: {
+    //   modules: {
+    //     imageDrop: true,
+    //     imageResize: {}
+    //   }
+    // }
   }),
 
   computed: {
@@ -94,7 +97,8 @@ export default {
     DialogWindow,
     loading: MiniLoading,
     CustomFilesUploadInput,
-    PhotoPreview
+    PhotoPreview,
+    VueEditor
   }
 };
 </script>
