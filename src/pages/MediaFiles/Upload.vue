@@ -62,9 +62,8 @@
 <script>
 import { MiniLoading } from "@/components/Loading/index.js";
 import { eventBus } from "../../main";
-import FirebaseApi from "../../services/firebase-api";
-
-const { uploadPicture } = new FirebaseApi();
+import { Gallery } from "@/services/index";
+const { uploadPicture } = new Gallery();
 
 export default {
   props: {
