@@ -1,46 +1,61 @@
 <template>
   <md-dialog :md-active.sync="isActive">
     <md-dialog-title>Upload Files</md-dialog-title>
-      <md-dialog-content>
-        <div class="md-layout md-alignment-center md-size-100">
-          
-          <div class="md-layout-item md-size-100 custom__md-layout-item">
-            <input type='file' ref="fileInput" style='display: none' accept="image/*" @change="selectFiles" multiple/>
-            <md-button class="md-primary" @click="choseFile()">
-              <md-icon>attach_file</md-icon>
-              Choose files
-            </md-button>
-          </div>
-          
-          <div class="md-layout-item md-size-100 custom__md-layout-item" v-if="filesSrc.length > 0">
-            <div class="image-preview-item" v-for='(fileSrc, index) in filesSrc' :key='index'>
-              <md-button class="md-icon-button md-dense md-danger custom__md-icon-button" @click='removePic(index)'>
-                <md-icon>close</md-icon>
-              </md-button>
-              <img :src='fileSrc' alt='image' class="img-preview"/>
-              <md-field>
-                <md-icon>description</md-icon>
-                <label>Description</label>
-                <md-input v-model="files[index].description"></md-input>
-              </md-field>
-            </div>
-          </div>
-
+    <md-dialog-content>
+      <div class="md-layout md-alignment-center md-size-100">
+        <div class="md-layout-item md-size-100 custom__md-layout-item">
+          <input
+            type="file"
+            ref="fileInput"
+            style="display: none"
+            accept="image/*"
+            @change="selectFiles"
+            multiple
+          />
+          <md-button class="md-primary" @click="choseFile()">
+            <md-icon>attach_file</md-icon>
+            Choose files
+          </md-button>
         </div>
-      </md-dialog-content>
-      <md-dialog-actions>
-          <md-button class="md-default" @click="closeDialog()">
-            <md-icon>close</md-icon>
-            Close
-          </md-button>
-          <md-button class="md-success" @click="upload()">
-            <loading v-if="uploading"/>
-            <span v-else>
-              <md-icon>save</md-icon>
-              Save
-            </span>
-          </md-button>
-      </md-dialog-actions>
+
+        <div
+          class="md-layout-item md-size-100 custom__md-layout-item"
+          v-if="filesSrc.length > 0"
+        >
+          <div
+            class="image-preview-item"
+            v-for="(fileSrc, index) in filesSrc"
+            :key="index"
+          >
+            <md-button
+              class="md-icon-button md-dense md-danger custom__md-icon-button"
+              @click="removePic(index)"
+            >
+              <md-icon>close</md-icon>
+            </md-button>
+            <img :src="fileSrc" alt="image" class="img-preview" />
+            <md-field>
+              <md-icon>description</md-icon>
+              <label>Description</label>
+              <md-input v-model="files[index].description"></md-input>
+            </md-field>
+          </div>
+        </div>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions>
+      <md-button class="md-default" @click="closeDialog()">
+        <md-icon>close</md-icon>
+        Close
+      </md-button>
+      <md-button class="md-success" @click="upload()">
+        <loading v-if="uploading" />
+        <span v-else>
+          <md-icon>save</md-icon>
+          Save
+        </span>
+      </md-button>
+    </md-dialog-actions>
   </md-dialog>
 </template>
 
@@ -66,33 +81,33 @@ export default {
     choseFile() {
       this.$refs.fileInput.click();
     },
-    
+
     selectFiles(e) {
       const files = e.target.files;
-      for(let i = 0; files.length > i; i++){
+      for (let i = 0; files.length > i; i++) {
         const reader = new FileReader();
         reader.onload = e => {
           this.filesSrc.push(reader.result);
-        }
+        };
         reader.readAsDataURL(files[i]);
       }
       files.forEach(element => {
-        this.files.push({file: element, description: ''});
+        this.files.push({ file: element, description: "" });
       });
     },
-    
+
     removePic(index) {
       this.filesSrc.splice(index, 1);
       this.files.splice(index, 1);
     },
-    
-    closeDialog(){
+
+    closeDialog() {
       this.clearData();
-      this.$emit('closeDialog')
+      this.$emit("closeDialog");
     },
 
     async upload() {
-      if(this.files.length === 0){
+      if (this.files.length === 0) {
         this.notifyVue("Choose files, please!", "warning", "danger");
         return;
       }
@@ -101,15 +116,15 @@ export default {
       const queriesArr = [];
       this.files.forEach(el => {
         queriesArr.push(uploadPicture(el.file, el.description));
-      })
-      
+      });
+
       const resArr = await Promise.all(queriesArr);
       resArr.forEach(el => {
-        if(el.success){
-          const messages = el.messages.join(' ');
+        if (el.success) {
+          const messages = el.messages.join(" ");
           this.notifyVue(messages, "done", "success");
-        }else{
-          const messages = el.messages.join(' ');
+        } else {
+          const messages = el.messages.join(" ");
           this.notifyVue(messages, "warning", "danger");
         }
       });
@@ -117,7 +132,7 @@ export default {
       this.uploading = false;
       this.clearData();
       eventBus.$emit("updatePics");
-      this.$emit('closeDialog')
+      this.$emit("closeDialog");
       return;
     },
 
@@ -126,7 +141,13 @@ export default {
       this.files = [];
     },
 
-    notifyVue(message, icon, type, verticalAlign='top', horizontalAlign='right') {
+    notifyVue(
+      message,
+      icon,
+      type,
+      verticalAlign = "top",
+      horizontalAlign = "right"
+    ) {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
@@ -137,7 +158,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.custom__md-layout-item{
+.custom__md-layout-item {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -155,11 +176,10 @@ export default {
   width: 100%;
 }
 
-.custom__md-icon-button{
+.custom__md-icon-button {
   margin: 0;
   position: absolute;
   top: 0;
   right: 0;
 }
-
 </style>
