@@ -374,7 +374,9 @@ export default {
     }
   },
   async created() {
+    this.isMainLoading = true;
     const news = await getNews(0, this.itemsOnPage);
+    this.isMainLoading = false;
     this.createNewsData(news);
   }
 };
