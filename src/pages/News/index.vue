@@ -68,6 +68,7 @@ import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
 import { News, Gallery } from "@/services/index";
+import { NEWSMESSAGES } from "./messages";
 const {
   getNews,
   deleteNews,
@@ -155,27 +156,22 @@ export default {
         query = await createNews({ title, content, visible }, this.token);
 
         if (!query.success) {
-          this.notifyVue(query.message, "warning", "danger");
+          this.notifyVue(NEWSMESSAGES.REJECT.NOT_CREATED, "warning", "danger");
           this.isLoading = true;
           return;
         }
       } catch (err) {
         console.error(err);
-        this.notifyVue(
-          "Can't save news. Try again later.",
-          "warning",
-          "danger"
-        );
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
         this.isLoading = false;
         return;
       }
 
       // Upload file
-
-      await updateImage({ ...this.selectedItem, id: query.key }); ///check
+      await updateImage({ ...this.selectedItem, id: query.key });
 
       this.isLoading = false;
-      this.notifyVue(query.message, "done", "success");
+      this.notifyVue(NEWSMESSAGES.SUCCESS.SAVED, "done", "success");
       const news = await getNews(0, 1);
       this.news = [news.data[0], ...this.news];
       this.closeDialog();
@@ -213,12 +209,12 @@ export default {
         if (query.success) {
           const updatedNewsData = await getNews(index, 1);
           this.news.splice(index, 1, updatedNewsData.data[0]);
-          this.notifyVue("News updated", "done", "success");
+          this.notifyVue(NEWSMESSAGES.SUCCESS.UPDATED, "done", "success");
         } else {
-          this.notifyVue(query.message, "warning", "danger");
+          this.notifyVue(NEWSMESSAGES.REJECT.NOT_UPDATED, "warning", "danger");
         }
       } catch (err) {
-        this.notifyVue("Can't update news", "warning", "danger");
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
         console.error(err);
       }
 
@@ -236,9 +232,9 @@ export default {
       if (result.success) {
         this.news.splice(index, 1);
         this.count = this.count - 1;
-        this.notifyVue(result.message, "done", "success");
+        this.notifyVue(NEWSMESSAGES.SUCCESS.DELETED, "done", "success");
       } else {
-        this.notifyVue(result.message, "warning", "danger");
+        this.notifyVue(NEWSMESSAGES.REJECT.NOT_DELETED, "warning", "danger");
         return;
       }
 
@@ -260,12 +256,13 @@ export default {
         if (query.success) {
           this.news.splice(index, 1, newData);
 
-          this.notifyVue(query.message, "done", "success");
+          this.notifyVue(NEWSMESSAGES.SUCCESS.DRAFT, "done", "success");
           return;
         }
 
-        this.notifyVue(query.message, "warning", "danger");
+        this.notifyVue(NEWSMESSAGES.REJECT.NOT_DRAFT, "warning", "danger");
       } catch (err) {
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
         console.error(err);
       }
     },
