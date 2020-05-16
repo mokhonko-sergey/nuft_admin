@@ -5,8 +5,8 @@
         <md-card-header data-background-color="green">
           <div class="md-layout md-size-100 md-alignment-center">
             <div class="md-layout-item md-size-25 md-xsmall-size-100">
-              <h4 class="title">List of news</h4>
-              <p>Create, update, delete.</p>
+              <h4 class="title">Список новин</h4>
+              <p>Керуйте новинами, як професіонал.</p>
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
               <md-autocomplete
@@ -14,26 +14,28 @@
                 v-model="searchValue"
                 :md-options="employees"
               >
-                <label>Search...</label>
+                <label>Пошук...</label>
               </md-autocomplete>
             </div>
             <div class="md-layout-item md-size-25 md-xsmall-size-100 allign">
-              <!-- flex -->
               <md-button class="md-primary" @click="openDialogForNewRecord()">
                 <md-icon> note_add</md-icon>
-                Add news
+                Додати новину
               </md-button>
             </div>
           </div>
         </md-card-header>
         <md-card-content>
           <nav-tabs-table
-            :data="transformNewsData"
-            :cells="{
-              Title: 'title',
-              'Created Time': 'created',
-              'Updated Time': 'updated'
-            }"
+            :data="news"
+            :cells="[
+              { cell: 'Назва новини', field: 'title'},
+              {
+                cell: 'Час створення',
+                field: 'created',
+                function: transformTime
+              }
+            ]"
             @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
@@ -43,7 +45,7 @@
           <div class="more-block" v-if="isMore">
             <md-button class="md-success" @click="downloadMore">
               <loading v-if="isLoading" />
-              <span v-else>Show More</span>
+              <span v-else>Більше новин</span>
             </md-button>
           </div>
         </md-card-content>
@@ -137,15 +139,6 @@ export default {
       return this.selectedAction == "create"
         ? this.createRecord
         : this.editRecord;
-    },
-    transformNewsData() {
-      return this.news.map(el => {
-        return {
-          ...el,
-          created: this.transformTime(el.created),
-          updated: this.transformTime(el.updated)
-        };
-      });
     },
     isMore() {
       return this.news.length < this.count;
@@ -325,7 +318,7 @@ export default {
 
     transformTime(time) {
       if (time) {
-        return new Date(time).toLocaleDateString("ua-UA", {
+        return new Date(time).toLocaleDateString("ukr", {
           year: "numeric",
           month: "long",
           day: "numeric"
