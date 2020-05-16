@@ -2,30 +2,35 @@
   <dialog-window :showDialog="isActive" :title="title">
     <template slot="content">
       <md-field>
-        <label>Title</label>
+        <label>Заголовок</label>
         <md-input v-model="value.title"></md-input>
       </md-field>
 
-      <!-- Upload File  -->
-      <div class="md-layout md-alignment-center md-size-100">
-        <div class="md-layout-item md-size-100">
-          <custom-files-upload-input :isMultiple="false" v-model="files" />
+      <div class="card-content">
+        <!-- Upload File  -->
+        <div class="row row-1">
+          <div class="photo-contaier">
+            <custom-files-upload-input :isMultiple="false" v-model="files" />
+            <photo-preview v-model="files" :isDescription="false" />
+          </div>
+          <md-switch v-model="value.visible" class="md-primary">
+            Відображати запис
+          </md-switch>
         </div>
 
-        <div class="md-layout-item md-size-100">
-          <photo-preview v-model="files" :isDescription="false" />
+        <!-- Editor -->
+        <div class="row row-2">
+          <vue-editor v-model="value.content" />
         </div>
       </div>
-      <vue-editor v-model="value.content" />
-      <md-switch v-model="value.visible" class="md-primary">Visible</md-switch>
     </template>
     <template slot="actions">
       <md-button @click="$emit('close-dialog')">
-        Close
+        Закрити
       </md-button>
       <md-button class="md-success" @click="action">
         <loading v-if="isLoading" />
-        <span v-else>Save</span>
+        <span v-else>Зберегти</span>
       </md-button>
     </template>
   </dialog-window>
@@ -59,12 +64,6 @@ export default {
 
   data: () => ({
     files: []
-    // editorSettings: {
-    //   modules: {
-    //     imageDrop: true,
-    //     imageResize: {}
-    //   }
-    // }
   }),
 
   computed: {
@@ -104,14 +103,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.preview-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .img-preview {
-    width: 250px;
-    height: auto;
-  }
-}
+@import "./style.scss";
 </style>

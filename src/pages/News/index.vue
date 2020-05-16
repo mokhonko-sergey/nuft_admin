@@ -69,7 +69,7 @@
     </nav-tabs-card>
     <!-- Dialog Window -->
     <dialog-window
-      title="Add Post"
+      :title="title"
       :isActive="isActiveDialog"
       :action="computedAction"
       :isLoading="isLoading"
@@ -159,6 +159,12 @@ export default {
     },
     isMore() {
       return this.news.length < this.count;
+    },
+    title() {
+      if (this.selectedAction === "create") {
+        return "Створити новину";
+      }
+      return "Редагувати новину";
     }
   },
   methods: {
