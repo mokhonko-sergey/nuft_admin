@@ -25,11 +25,27 @@
             </div>
           </div>
         </md-card-header>
-        <md-card-content>
+
+        <!-- NOT FOUND BLOCK -->
+        <div class="not-fond-block" v-if="count === 0">
+          <div class="row">
+            <h2>УПС... Нічого не знайдено</h2>
+          </div>
+          <div class="row">
+            <img
+              src="./img/sad-face.png"
+              alt="Sad emoji"
+              class="not-fond-block__emoji"
+            />
+          </div>
+        </div>
+        <!-- / NOT FOUND BLOCK -->
+
+        <md-card-content v-else>
           <nav-tabs-table
             :data="news"
             :cells="[
-              { cell: 'Назва новини', field: 'title'},
+              { cell: 'Назва новини', field: 'title' },
               {
                 cell: 'Час створення',
                 field: 'created',
@@ -338,7 +354,7 @@ export default {
       this.isMainLoading = !this.isMainLoading;
       this.createNewsData({
         newsCount: 0,
-        data: [{ title: query.message }]
+        data: []
       });
     },
 
@@ -379,10 +395,25 @@ export default {
 .md-field label {
   color: #fff !important;
 }
-
 .allign {
   display: flex;
   align-content: center;
   justify-content: center;
+}
+.not-fond-block {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  padding: 25px;
+}
+.not-fond-block .row {
+  text-align: center;
+}
+.not-fond-block__emoji {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
 }
 </style>
