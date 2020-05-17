@@ -16,16 +16,6 @@
         </md-button>
 
         <div class="md-collapse">
-          <!-- <div class="md-autocomplete">
-            <md-autocomplete
-              class="search"
-              v-model="selectedEmployee"
-              :md-options="employees"
-              @input="search($event)"
-            >
-              <label>Search...</label>
-            </md-autocomplete>
-          </div> -->
           <md-list>
             <md-list-item href="#/">
               <i class="material-icons">dashboard</i>
@@ -64,6 +54,10 @@
               <i class="material-icons">person</i>
               <p class="hidden-lg hidden-md">Profile</p>
             </md-list-item>
+
+            <md-list-item>
+              <md-button class="md-info" @click="signOut">Вихід</md-button>
+            </md-list-item>
           </md-list>
         </div>
       </div>
@@ -83,6 +77,12 @@ export default {
   methods: {
     toggleSidebar() {
       this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
+    },
+
+    signOut() {
+      this.$store.dispatch("signOut").then(() => {
+        this.$router.push("login");
+      });
     }
   }
 };

@@ -1,6 +1,11 @@
 import * as firebase from "firebase";
+import {
+  setPersistenceLocal,
+  setPersistenceSession,
+  clearPersistence
+} from "./persistence";
 import { Auth } from "@/services/index";
-const { isAuthorized } = new Auth();
+const { signIn, refreshToken } = new Auth();
 export default {
   state: {
     user: {
@@ -22,26 +27,32 @@ export default {
     }
   },
   actions: {
-    async signIn({ commit }, { email, pass }) {
+    async signIn({ commit }, { email, pass, persistence = false }) {
       try {
-        const loginQyery = await firebase
-          .auth()
-          .signInWithEmailAndPassword(email, pass);
-        const user = loginQyery.user;
-        const userResult = await user.getIdTokenResult();
+        const query = await signIn(email, pass);
+        if (!query.success)
+          return {
+            success: false,
+            message: query.message
+          };
 
+        const { idToken, refreshToken, localId, expiresIn } = query.data;
         const userData = {
-          userId: user.uid,
-          token: userResult.token,
-          refreshToken: user.refreshToken,
-          expired: userResult.expirationTime
+          userId: localId,
+          token: idToken,
+          refreshToken,
+          expired: Date.now() + parseInt(expiresIn)
         };
 
         commit("setUser", userData);
 
+        persistence
+          ? setPersistenceLocal(userData)
+          : setPersistenceSession(userData);
+
         return {
           success: true,
-          message: "User is loged in"
+          message: "User sign in"
         };
       } catch (err) {
         return {
@@ -50,14 +61,15 @@ export default {
         };
       }
     },
-    //unused
-    async checkUserToken({ state }) {
-      try {
-        const query = await isAuthorized(state.user.token);
-        return query.authenticated;
-      } catch (err) {
-        return false;
-      }
+    async signOut({ commit }) {
+      await firebase.auth().signOut();
+      clearPersistence();
+      commit("setUser", {
+        userId: null,
+        token: null,
+        refreshToken: null,
+        expired: null
+      });
     }
   },
   getters: {
