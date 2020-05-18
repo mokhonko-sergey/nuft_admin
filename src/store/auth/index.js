@@ -2,6 +2,7 @@ import * as firebase from "firebase";
 import {
   setPersistenceLocal,
   setPersistenceSession,
+  getPersistence,
   clearPersistence
 } from "./persistence";
 import { Auth } from "@/services/index";
@@ -70,6 +71,10 @@ export default {
         refreshToken: null,
         expired: null
       });
+    },
+    checkPersistence({ commit }) {
+      const data = JSON.parse(getPersistence());
+      data ? commit("setUser", data) : commit("setUser", {});
     }
   },
   getters: {

@@ -10,9 +10,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  store.dispatch("checkPersistence");
   const { userId, refreshToken, expired } = store.getters.getUser;
-
-  // const isExpired = Date.parse(expired) > Date.now();
   to.name !== "Login" && !userId ? next({ name: "Login" }) : next();
   next();
 });
