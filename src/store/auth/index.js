@@ -42,7 +42,7 @@ export default {
           userId: localId,
           token: idToken,
           refreshToken,
-          expired: Date.now() + parseInt(expiresIn)
+          expired: Date.now() + parseInt(expiresIn) * 1000
         };
 
         commit("setUser", userData);
@@ -75,6 +75,17 @@ export default {
     checkPersistence({ commit }) {
       const data = JSON.parse(getPersistence());
       data ? commit("setUser", data) : commit("setUser", {});
+    },
+    async updateTokens({ commit }, token) {
+      const res = await refreshToken(token);
+      if (res.success) {
+        commit("setUser", {
+          userId: res.data.user_id,
+          token: res.data.access_token,
+          refreshToken: res.data.refresh_token,
+          expired: Date.now() + parseInt(res.data.expires_in) * 1000
+        });
+      }
     }
   },
   getters: {
