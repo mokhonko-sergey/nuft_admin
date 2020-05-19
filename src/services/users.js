@@ -11,10 +11,7 @@ export default class Users extends HttpMethods {
       method: "GET",
       headers: authHeader
     };
-    const query = await this._get("users", { options });
-    if (query.success) return query.result;
-
-    return query.message;
+    return await this._get("users", { options });
   };
 
   delUser = async (id, token) => {
@@ -41,7 +38,6 @@ export default class Users extends HttpMethods {
   updateUserInfo = async (token, newUserData) => {
     const authHeader = createAuthHeader(token);
     const data = JSON.stringify(newUserData);
-
     const options = {
       headers: authHeader,
       body: data

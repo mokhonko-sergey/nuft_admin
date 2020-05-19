@@ -6,8 +6,11 @@
       <div class="md-layout">
         <div class="md-layout-item md-size-100">
           <md-field>
-            <label>User Name</label>
-            <md-input v-model="value.displayName" type="text"></md-input>
+            <label for="rules">Права користувача</label>
+            <md-select v-model="value.displayName" name="rules" id="rules">
+              <md-option value="Адміністратор">Адміністратор</md-option>
+              <md-option value="Користувач">Користувач</md-option>
+            </md-select>
           </md-field>
         </div>
         <div class="md-layout-item md-size-100">
@@ -53,6 +56,7 @@
 import Dialog from "@/components/Dialog";
 import { MiniLoading } from "@/components/Loading";
 export default {
+  name: "dialog-users",
   components: {
     AddNewUser: Dialog,
     loading: MiniLoading

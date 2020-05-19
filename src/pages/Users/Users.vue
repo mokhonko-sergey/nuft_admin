@@ -49,6 +49,7 @@ import { Users } from "@/services/index";
 const { getAllUsers, delUser, updateUserInfo, createNewUser } = new Users();
 
 export default {
+  name: "users",
   components: {
     NavTabsCard,
     NavTabsTable,
@@ -91,8 +92,7 @@ export default {
   },
   methods: {
     async getUsers() {
-      const result = await getAllUsers(this.token);
-      this.users = result;
+      this.users = await getAllUsers(this.token);
     },
 
     async deleteUser(id) {
