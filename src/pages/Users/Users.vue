@@ -223,7 +223,7 @@ export default {
     },
 
     dialoForEditUserData(value) {
-      this.user = value;
+      this.user = Object.assign({}, value);
       this.action = "edit";
       this.isActiveDialog = !this.isActiveDialog;
     },
