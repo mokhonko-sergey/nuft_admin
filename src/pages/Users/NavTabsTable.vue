@@ -3,9 +3,9 @@
     <md-table>
       <md-table-row>
         <md-table-head>Email</md-table-head>
-        <md-table-head>Name</md-table-head>
-        <md-table-head>Last auth time</md-table-head>
-        <md-table-head>Actions</md-table-head>
+        <md-table-head>Роль користувача</md-table-head>
+        <md-table-head>Останній час входу</md-table-head>
+        <md-table-head>Дії</md-table-head>
       </md-table-row>
 
       <md-table-row slot="md-table-row" v-for="item in data" :key="item.uid">
@@ -19,21 +19,21 @@
             @click="openDialog(item)"
           >
             <md-icon>edit</md-icon>
-            <md-tooltip md-direction="top">Edit</md-tooltip>
+            <md-tooltip md-direction="top">Редагувати</md-tooltip>
           </md-button>
           <md-button
             class="md-just-icon md-simple md-default"
             @click="$emit('block-user', item)"
           >
             <md-icon>block</md-icon>
-            <md-tooltip md-direction="top">Block</md-tooltip>
+            <md-tooltip md-direction="top">Заблокувати</md-tooltip>
           </md-button>
           <md-button
             class="md-just-icon md-simple md-danger"
             @click="$emit('delete-user', item.uid)"
           >
             <md-icon>close</md-icon>
-            <md-tooltip md-direction="top">Delete</md-tooltip>
+            <md-tooltip md-direction="top">Видалити</md-tooltip>
           </md-button>
         </md-table-cell>
       </md-table-row>

@@ -15,19 +15,19 @@
         </div>
         <div class="md-layout-item md-size-100">
           <md-field>
-            <label>Email Address</label>
+            <label>Email</label>
             <md-input v-model="value.email" type="email"></md-input>
           </md-field>
         </div>
         <div class="md-layout-item md-size-100">
           <md-field>
-            <label>Password</label>
+            <label>Пароль</label>
             <md-input v-model="value.password" type="password"></md-input>
           </md-field>
         </div>
         <div class="md-layout-item md-size-100">
           <md-field>
-            <label>Confirm password</label>
+            <label>Підтвердження пароля</label>
             <md-input
               v-model="value.confirmPassword"
               type="password"
@@ -35,18 +35,18 @@
           </md-field>
         </div>
         <div class="md-layout-item md-size-100">
-          <md-checkbox v-model="value.disabled">Disable user</md-checkbox>
+          <md-checkbox v-model="value.disabled">Заблокувати</md-checkbox>
         </div>
       </div>
     </template>
     <!-- Actions Buttons -->
     <template slot="actions">
       <md-button class="md-raised" @click="closeDialog()">
-        Cancel
+        Відміна
       </md-button>
       <md-button class="md-raised md-success" @click="action()">
         <loading v-if="loading" />
-        <span v-else>Save</span>
+        <span v-else>Зберегти</span>
       </md-button>
     </template>
   </add-new-user>
