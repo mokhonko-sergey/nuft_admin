@@ -3,6 +3,7 @@ const NEWSMESSAGES = {
     SAVED: "Новину збережено",
     UPDATED: "Запис оновлено",
     DRAFT: "Запис переміщено до чернеток",
+    PUBLISHED: "Запис опубліковано",
     DELETED: "Запис видалено",
   },
   REJECT: {

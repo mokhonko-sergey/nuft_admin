@@ -278,7 +278,10 @@ export default {
         if (query.success) {
           this.news.splice(index, 1, newData);
 
-          this.notifyVue(NEWSMESSAGES.SUCCESS.DRAFT, "done", "success");
+          const message = item.visible
+            ? NEWSMESSAGES.SUCCESS.DRAFT
+            : NEWSMESSAGES.SUCCESS.PUBLISHED;
+          this.notifyVue(message, "done", "success");
           return;
         }
 
