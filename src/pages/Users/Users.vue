@@ -93,7 +93,8 @@ export default {
   },
   methods: {
     async getUsers() {
-      this.users = await getAllUsers(this.token);
+      const query = await getAllUsers(this.token);
+      this.users = query.success ? query.result : [];
     },
 
     async deleteUser(id) {
@@ -269,8 +270,8 @@ export default {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
-  created() {
-    this.getUsers();
+  async created() {
+    await this.getUsers();
   }
 };
 </script>
