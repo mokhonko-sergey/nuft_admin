@@ -57,6 +57,7 @@
         >
           <v-option
             :data="option"
+            :textProp="textProp"
             @save-item="save"
             @delete-item="del"
             @select-option="onSelect(option, index)"

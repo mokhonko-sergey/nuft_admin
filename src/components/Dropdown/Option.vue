@@ -5,7 +5,7 @@
         <input
           type="text"
           class="v-dropdown-item__input"
-          v-model="newData.label"
+          v-model="newData[textProp]"
         />
       </div>
 
@@ -26,7 +26,7 @@
       @click="$emit('select-option')"
       v-else
     >
-      <div class="coll">{{ data.label }}</div>
+      <div class="coll">{{ data[textProp] }}</div>
 
       <div>
         <md-button class="md-just-icon md-simple md-warning" @click.stop="edit">
@@ -49,7 +49,7 @@
 <script>
 export default {
   name: "v-option",
-  props: ["data"],
+  props: ["data", "textProp"],
   data: () => ({
     isEdit: false,
     newData: {}
