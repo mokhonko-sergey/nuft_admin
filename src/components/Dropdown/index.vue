@@ -71,10 +71,14 @@
 <script>
 import VSelect from "@alfsnd/vue-bootstrap-select";
 import VOption from "./Option";
+import { Categories } from "@/services";
+const { getCategories } = new Categories();
 export default {
   name: "vselect-drop-down",
   extends: VSelect,
-  props: {},
+  props: {
+    actions: Object
+  },
   computed: {
     filteredOptions() {
       if (this.searchValue.length > 0) {
@@ -97,17 +101,17 @@ export default {
   },
   methods: {
     add() {
-      console.log(this.searchValue);
-      this.searchValue = "";
+      this.actions.add(this.searchValue);
     },
     save(val) {
-      console.log(val);
+      // const { title, id } = val;
+      this.actions.update(val);
     },
     del(val) {
       if (!window.confirm("Ви впевнені?")) {
         return;
       }
-      console.log(val);
+      this.actions.del(val);
     }
   },
   components: {
