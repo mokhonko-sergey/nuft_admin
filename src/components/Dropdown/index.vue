@@ -72,17 +72,25 @@
 import VSelect from "@alfsnd/vue-bootstrap-select";
 import VOption from "./Option";
 import { Categories } from "@/services";
-const { getCategories } = new Categories();
+const {
+  getCategories,
+  delCategory,
+  addCategory,
+  updateCategory
+} = new Categories();
 export default {
   name: "vselect-drop-down",
   extends: VSelect,
   props: {
-    actions: Object
+    table: [String, Number]
   },
+  data: () => ({
+    loadedOptions: []
+  }),
   computed: {
     filteredOptions() {
       if (this.searchValue.length > 0) {
-        return this.options.filter(item => {
+        return this.loadedOptions.filter(item => {
           if (typeof item === "object") {
             return (
               item[this.textProp]
@@ -96,23 +104,49 @@ export default {
           }
         });
       }
-      return this.options;
+      return this.loadedOptions;
+    },
+    token() {
+      return this.$store.getters.getUser.token;
+    },
+    isDisableAddBtn() {
+      const arr = this.filteredOptions.map(el =>
+        el[this.textProp].toLowerCase()
+      );
+      return arr.includes(this.searchValue.toLowerCase());
     }
   },
   methods: {
-    add() {
-      this.actions.add(this.searchValue);
+    async getCategories(table) {
+      const query = await getCategories(table);
+      this.loadedOptions = query.success ? query.data : [];
     },
-    save(val) {
-      // const { title, id } = val;
-      this.actions.update(val);
+    async add() {
+      await addCategory(
+        { table: this.table, title: this.searchValue },
+        this.token
+      );
+      await this.getCategories(this.table);
     },
-    del(val) {
+    async save(val) {
+      const { title, count, id } = val;
+      await updateCategory(
+        { table: this.table, id },
+        { title, count },
+        this.token
+      );
+      await this.getCategories(this.table);
+    },
+    async del(val) {
       if (!window.confirm("Ви впевнені?")) {
         return;
       }
-      this.actions.del(val);
+      await delCategory({ table: this.table, id: val }, this.token);
+      await this.getCategories(this.table);
     }
+  },
+  async created() {
+    await this.getCategories(this.table);
   },
   components: {
     VOption
