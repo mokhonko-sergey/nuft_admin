@@ -176,14 +176,20 @@ export default {
   },
   methods: {
     async createRecord() {
-      const { title, content, visible, category = null } = this.selectedItem;
+      const {
+        title,
+        content,
+        description,
+        visible,
+        category = null
+      } = this.selectedItem;
       this.isLoading = true;
       let query;
 
       //Create record
       try {
         query = await createNews(
-          { title, content, visible, category },
+          { title, content, visible, category, description },
           this.token
         );
 
