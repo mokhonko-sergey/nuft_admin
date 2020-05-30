@@ -47,6 +47,11 @@
             :cells="[
               { cell: 'Назва новини', field: 'title' },
               {
+                cell: 'Категорія',
+                field: 'category',
+                function: categoryName
+              },
+              {
                 cell: 'Час створення',
                 field: 'created',
                 function: transformTime
@@ -80,6 +85,8 @@
 </template>
 
 <script>
+import _ from "lodash";
+
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
@@ -169,13 +176,16 @@ export default {
   },
   methods: {
     async createRecord() {
-      const { title, content, visible } = this.selectedItem;
+      const { title, content, visible, category = null } = this.selectedItem;
       this.isLoading = true;
       let query;
 
       //Create record
       try {
-        query = await createNews({ title, content, visible }, this.token);
+        query = await createNews(
+          { title, content, visible, category },
+          this.token
+        );
 
         if (!query.success) {
           this.notifyVue(NEWSMESSAGES.REJECT.NOT_CREATED, "warning", "danger");
@@ -348,6 +358,10 @@ export default {
       }
 
       return;
+    },
+
+    categoryName(category) {
+      return !_.isUndefined(category) ? category.title : "-";
     },
 
     async search(value, startAt, count) {

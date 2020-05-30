@@ -20,6 +20,24 @@
 
         <!-- Editor -->
         <div class="row row-2">
+          <drop-down
+            labelSearchPlaceholder="Пошук"
+            labelTitle="Виберіть категорію для новини"
+            labelNotFound="Не знайдено"
+            textProp="title"
+            table="news"
+            v-model="value.category"
+          />
+
+          <hr />
+
+          <md-field>
+            <label>Короткий опис новини</label>
+            <md-textarea v-model="value.description"></md-textarea>
+          </md-field>
+
+          <hr />
+
           <vue-editor v-model="value.content" />
         </div>
       </div>
@@ -41,6 +59,7 @@ import DialogWindow from "@/components/Dialog";
 import { MiniLoading } from "@/components/Loading";
 import { CustomFilesUploadInput, PhotoPreview } from "@/components/FilesUpload";
 import { VueEditor } from "vue2-editor";
+import DropDown from "@/components/Dropdown/index.vue";
 export default {
   name: "DialogWindowForNews",
   props: {
@@ -97,7 +116,8 @@ export default {
     loading: MiniLoading,
     CustomFilesUploadInput,
     PhotoPreview,
-    VueEditor
+    VueEditor,
+    DropDown
   }
 };
 </script>
