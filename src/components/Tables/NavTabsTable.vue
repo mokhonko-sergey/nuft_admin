@@ -1,21 +1,50 @@
 <template>
   <div>
-    <md-table v-model="users" @md-selected="onSelect">
+    <md-table>
+      <md-table-row>
+        <md-table-head v-for="(key, index) of cells" :key="index">
+          {{ key.cell }}
+        </md-table-head>
+        <md-table-head>Дії</md-table-head>
+      </md-table-row>
       <md-table-row
-        slot="md-table-row"
-        slot-scope="{ item }"
-        md-selectable="multiple"
-        md-auto-select
+        v-for="(item, index) of data"
+        :key="index"
+        :class="{ 'item-hide': !item.visible }"
       >
-        <md-table-cell>{{ item.name }}</md-table-cell>
+        <md-table-cell v-for="(cell, index) in cells" :key="index">{{
+          cell.function ? cell.function(item[cell.field]) : item[cell.field]
+        }}</md-table-cell>
+
         <md-table-cell>
-          <md-button class="md-just-icon md-simple md-primary">
+          <md-button
+            class="md-just-icon md-simple md-primary"
+            @click="$emit('edit-item', item.id)"
+          >
             <md-icon>edit</md-icon>
-            <md-tooltip md-direction="top">Edit</md-tooltip>
+            <md-tooltip md-direction="top">Редагувати</md-tooltip>
           </md-button>
-          <md-button class="md-just-icon md-simple md-danger">
-            <md-icon>close</md-icon>
-            <md-tooltip md-direction="top">Close</md-tooltip>
+
+          <md-button
+            class="md-just-icon md-simple md-primary"
+            @click="$emit('toggle-visible-item', item)"
+          >
+            <md-icon v-show="item.visible">visibility</md-icon>
+            <md-tooltip md-direction="top" v-show="item.visible">
+              В чернетки
+            </md-tooltip>
+            <md-tooltip md-direction="top" v-show="!item.visible">
+              Опублікувати
+            </md-tooltip>
+            <md-icon v-show="!item.visible">visibility_off</md-icon>
+          </md-button>
+
+          <md-button
+            class="md-just-icon md-simple md-danger"
+            @click="$emit('delete-item', item.id)"
+          >
+            <md-icon>delete</md-icon>
+            <md-tooltip md-direction="top">Видалити</md-tooltip>
           </md-button>
         </md-table-cell>
       </md-table-row>
@@ -26,27 +55,15 @@
 <script>
 export default {
   name: "nav-tabs-table",
-  data() {
-    return {
-      selected: [],
-      users: [
-        {
-          name: 'Sign contract for "What are conference organizers afraid of?"'
-        },
-        {
-          name: "Lines From Great Russian Literature? Or E-mails From My Boss?"
-        },
-        {
-          name:
-            "Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit"
-        }
-      ]
-    };
-  },
-  methods: {
-    onSelect: function(items) {
-      this.selected = items;
-    }
+  props: {
+    data: Array,
+    cells: Array
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.item-hide {
+  background-color: #dadada;
+}
+</style>

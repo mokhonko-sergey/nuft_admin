@@ -45,13 +45,9 @@ import NavTabsCard from "./NavTabsCard";
 import NavTabsTable from "./NavTabsTable";
 import ActionsTab from "./ActionsTab";
 import DialogWindow from "./DialogWindow";
-import FirebaseApi from "@/services/firebase-api";
-const {
-  getAllUsers,
-  delUser,
-  updateUserInfo,
-  createNewUser
-} = new FirebaseApi();
+import { Users } from "@/services/index";
+const { getAllUsers, delUser, updateUserInfo, createNewUser } = new Users();
+
 export default {
   components: {
     NavTabsCard,

@@ -35,12 +35,12 @@
 </template>
 
 <script>
-import FirebaseApi from '../../services/firebase-api';
 import { eventBus } from "../../main";
 import Pagination from "./Pagination";
 import { MainLoading } from "@/components/Loading/index.js";
 
-const { getPics, delPicture } = new FirebaseApi();
+import { Gallery } from "@/services/index";
+const { getPics, delPicture } = new Gallery();
 
 export default {
     data: () => ({
