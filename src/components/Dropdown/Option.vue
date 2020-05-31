@@ -26,8 +26,9 @@
       @click="$emit('select-option')"
       v-else
     >
-      <div class="coll">{{ data[textProp] }}</div>
-
+      <div class="coll">
+        {{ data[textProp] }} | <b>{{ data.count }}</b>
+      </div>
       <div>
         <md-button class="md-just-icon md-simple md-warning" @click.stop="edit">
           <md-icon>edit</md-icon>
