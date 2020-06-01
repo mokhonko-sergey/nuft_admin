@@ -117,6 +117,17 @@ export default {
       return arr.includes(this.searchValue.toLowerCase());
     }
   },
+  watch: {
+    value: {
+      immediate: true,
+      handler(newVal) {
+        const index = this.loadedOptions.findIndex(op =>
+          this.isEqualOption(op, newVal)
+        );
+        this.onSelect(newVal, index);
+      }
+    }
+  },
   methods: {
     async getCategories(table) {
       const query = await getCategories(table);
@@ -148,6 +159,8 @@ export default {
   },
   async created() {
     await this.getCategories(this.table);
+    const index = this.loadedOptions.findIndex(op => op.id === this.value);
+    this.onSelect(this.loadedOptions[index], index);
   },
   components: {
     VOption
