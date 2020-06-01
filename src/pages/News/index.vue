@@ -181,15 +181,25 @@ export default {
         content,
         description,
         visible,
-        category = null
+        category
       } = this.selectedItem;
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : "";
       this.isLoading = true;
       let query;
 
       //Create record
       try {
         query = await createNews(
-          { title, content, visible, category, description },
+          {
+            title,
+            content,
+            visible,
+            category: catId,
+            description
+          },
           this.token
         );
 
@@ -216,9 +226,14 @@ export default {
     },
 
     async editRecord() {
-      const { id } = this.selectedItem;
+      const { id, category } = this.selectedItem;
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : category;
       const newData = {
-        ...this.selectedItem
+        ...this.selectedItem,
+        category: catId
       };
 
       const index = this.news.findIndex(el => el.id === id);
