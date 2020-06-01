@@ -107,6 +107,12 @@ export default {
       }
       return this.loadedOptions;
     },
+    title() {
+      return this.selectedValue !== null &&
+        this.selectedValue.hasOwnProperty(this.textProp)
+        ? this.getOptionLabel(this.selectedValue)
+        : this.labelTitle;
+    },
     token() {
       return this.$store.getters.getUser.token;
     },
