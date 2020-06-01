@@ -90,7 +90,7 @@ import _ from "lodash";
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
-import { News, Gallery } from "@/services/index";
+import { News, Gallery, Categories } from "@/services/index";
 import { NEWSMESSAGES } from "./messages";
 const {
   getNews,
@@ -101,6 +101,7 @@ const {
   uploadTitlePhoto
 } = new News();
 const { delPicture } = new Gallery();
+const { getCategories, updateCategory } = new Categories();
 
 //Functions
 const isItemHasPhoto = item => {
@@ -132,6 +133,17 @@ const deleteImage = async item => {
   }
 };
 
+const updateCountOfCat = async (id, table, token, add = false) => {
+  if (!id || !table) return;
+  const arr = await getCategories(table);
+  const el = arr.data.find(el => el.id === id);
+
+  let count = add ? parseInt(el.count) + 1 : parseInt(el.count) - 1;
+  count = count < 0 ? 0 : count;
+
+  await updateCategory({ table, id }, { count }, token);
+};
+
 export default {
   name: "News",
   components: {
@@ -153,7 +165,8 @@ export default {
     isMainLoading: false,
     searchValue: null,
     employees: [],
-    timer: null
+    timer: null,
+    table: "news"
   }),
   computed: {
     token() {
@@ -218,6 +231,8 @@ export default {
       // Upload file
       await updateImage({ ...this.selectedItem, id: query.key });
 
+      await updateCountOfCat(catId, this.table, this.token, true);
+
       this.isLoading = false;
       this.notifyVue(NEWSMESSAGES.SUCCESS.SAVED, "done", "success");
       const news = await getNews(0, 1);
@@ -227,6 +242,7 @@ export default {
 
     async editRecord() {
       const { id, category } = this.selectedItem;
+      //get ID of new category
       const catId =
         category !== undefined && category.hasOwnProperty("id")
           ? category.id
@@ -238,6 +254,12 @@ export default {
 
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
+      //get ID of old category
+      const oldCategory = item.category;
+      const oldCatId =
+        oldCategory !== undefined && oldCategory.hasOwnProperty("id")
+          ? oldCategory.id
+          : oldCategory;
       this.isLoading = true;
 
       //delete image
@@ -262,6 +284,12 @@ export default {
         if (query.success) {
           const updatedNewsData = await getNews(index, 1);
           this.news.splice(index, 1, updatedNewsData.data[0]);
+
+          if (catId !== oldCatId) {
+            await updateCountOfCat(catId, this.table, this.token, true);
+            await updateCountOfCat(oldCatId, this.table, this.token);
+          }
+
           this.notifyVue(NEWSMESSAGES.SUCCESS.UPDATED, "done", "success");
         } else {
           this.notifyVue(NEWSMESSAGES.REJECT.NOT_UPDATED, "warning", "danger");
@@ -278,6 +306,13 @@ export default {
     async deleteItem(id) {
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
+      //find category
+      const { category } = item;
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : category;
+
       // delete image
       await deleteImage(item);
       // delete news from DB
@@ -285,6 +320,7 @@ export default {
       if (result.success) {
         this.news.splice(index, 1);
         this.count = this.count - 1;
+        await updateCountOfCat(catId, this.table, this.token);
         this.notifyVue(NEWSMESSAGES.SUCCESS.DELETED, "done", "success");
       } else {
         this.notifyVue(NEWSMESSAGES.REJECT.NOT_DELETED, "warning", "danger");
