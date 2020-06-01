@@ -20,12 +20,13 @@
             :placeholder="labelSearchPlaceholder"
             class="form-control"
             type="text"
-            v-model="searchValue"
+            v-model.trim="searchValue"
           />
         </div>
         <div>
           <md-button
             class="md-fab md-mini md-info md-btn-fab v-bs-searchbox__btn"
+            :disabled="isDisableAddBtn"
             @click="add"
             v-if="searchValue.length > 0"
           >
