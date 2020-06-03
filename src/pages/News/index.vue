@@ -101,7 +101,7 @@ const {
   uploadTitlePhoto
 } = new News();
 const { delPicture } = new Gallery();
-const { getCategories, updateCategory } = new Categories();
+const { updateCount } = new Categories();
 
 //Functions
 const isItemHasPhoto = item => {
@@ -131,17 +131,6 @@ const deleteImage = async item => {
       console.log(err);
     }
   }
-};
-
-const updateCountOfCat = async (id, table, token, add = false) => {
-  if (!id || !table) return;
-  const arr = await getCategories(table);
-  const el = arr.data.find(el => el.id === id);
-
-  let count = add ? parseInt(el.count) + 1 : parseInt(el.count) - 1;
-  count = count < 0 ? 0 : count;
-
-  await updateCategory({ table, id }, { count }, token);
 };
 
 export default {
@@ -231,7 +220,12 @@ export default {
       // Upload file
       await updateImage({ ...this.selectedItem, id: query.key });
 
-      await updateCountOfCat(catId, this.table, this.token, true);
+      await updateCount({
+        id: catId,
+        table: this.table,
+        token: this.token,
+        action: "new"
+      });
 
       this.isLoading = false;
       this.notifyVue(NEWSMESSAGES.SUCCESS.SAVED, "done", "success");
@@ -286,8 +280,13 @@ export default {
           this.news.splice(index, 1, updatedNewsData.data[0]);
 
           if (catId !== oldCatId) {
-            await updateCountOfCat(catId, this.table, this.token, true);
-            await updateCountOfCat(oldCatId, this.table, this.token);
+            await updateCount({
+              id: catId,
+              oldId: oldCatId,
+              table: this.table,
+              token: this.token,
+              action: "update"
+            });
           }
 
           this.notifyVue(NEWSMESSAGES.SUCCESS.UPDATED, "done", "success");
@@ -320,7 +319,14 @@ export default {
       if (result.success) {
         this.news.splice(index, 1);
         this.count = this.count - 1;
-        await updateCountOfCat(catId, this.table, this.token);
+
+        await updateCount({
+          id: catId,
+          table: this.table,
+          token: this.token,
+          action: "remove"
+        });
+
         this.notifyVue(NEWSMESSAGES.SUCCESS.DELETED, "done", "success");
       } else {
         this.notifyVue(NEWSMESSAGES.REJECT.NOT_DELETED, "warning", "danger");

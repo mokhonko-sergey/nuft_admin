@@ -29,4 +29,35 @@ export default class Categories extends HttpMethods {
     const options = { headers };
     return await this._del(`categories/${table}`, { id, options });
   };
+
+  //action: new, remove, update;
+  updateCount = async ({ id, table, action, token, oldId }) => {
+    if (!id || !table) return;
+
+    //download data
+    const arr = await this.getCategories(table);
+    const elNew = arr.data.find(el => el.id === id);
+
+    if (action === "new" || action === "update") {
+      await this.updateCategory(
+        { table, id },
+        { count: parseInt(elNew.count) + 1 },
+        token
+      );
+    }
+
+    let oldEl;
+    if (oldId) oldEl = arr.data.find(el => el.id === oldId);
+    if (oldId && !oldEl) return;
+
+    if (action === "remove" || action === "update") {
+      const computedId = oldId ? oldId : id;
+      const el = oldEl ? oldEl : elNew;
+      let count = parseInt(el.count) - 1;
+      count = count < 0 ? 0 : count;
+      await this.updateCategory({ table, id: computedId }, { count }, token);
+    }
+
+    return;
+  };
 }
