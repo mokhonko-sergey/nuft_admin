@@ -303,6 +303,8 @@ export default {
     },
 
     async deleteItem(id) {
+      if (!window.confirm("Ви дійсно бажаєте видалити запис?")) return;
+
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
       //find category
