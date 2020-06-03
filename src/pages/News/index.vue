@@ -64,8 +64,48 @@
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
-import { News } from "@/services/index";
-const { getNews, deleteNews, editNews, createNews, search } = new News();
+import { News, Gallery, Categories } from "@/services/index";
+import { NEWSMESSAGES } from "./messages";
+const {
+  getNews,
+  deleteNews,
+  editNews,
+  createNews,
+  search,
+  uploadTitlePhoto
+} = new News();
+const { delPicture } = new Gallery();
+const { updateCount } = new Categories();
+
+//Functions
+const isItemHasPhoto = item => {
+  return item.hasOwnProperty("photo") && item.photo.length > 0;
+};
+
+const updateImage = async item => {
+  if (isItemHasPhoto(item)) {
+    try {
+      item.photo[0].hasOwnProperty("file")
+        ? await uploadTitlePhoto(item.id, item.photo[0].file)
+        : false;
+    } catch (err) {
+      console.error(err);
+      this.notifyVue("Image did not update", "warning", "danger");
+    }
+  }
+  return;
+};
+
+const deleteImage = async item => {
+  if (item.hasOwnProperty("photo") && item.photo.hasOwnProperty("filename")) {
+    const filename = item.photo.filename;
+    try {
+      await delPicture(filename);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
 
 export default {
   components: {
@@ -136,6 +176,22 @@ export default {
         this.isLoading = false;
         console.error(err);
       }
+
+      // Upload file
+      await updateImage({ ...this.selectedItem, id: query.key });
+
+      await updateCount({
+        id: catId,
+        table: this.table,
+        token: this.token,
+        action: "new"
+      });
+
+      this.isLoading = false;
+      this.notifyVue(NEWSMESSAGES.SUCCESS.SAVED, "done", "success");
+      const news = await getNews(0, 1);
+      this.news = [news.data[0], ...this.news];
+      this.closeDialog();
     },
 
     async editRecord() {
@@ -151,10 +207,19 @@ export default {
           const updatedRecord = await this.getNews(index, 1);
           this.news.splice(index, 1, updatedRecord.data[0]);
 
-          this.isLoading = false;
-          this.notifyVue(query.message, "done", "success");
-          this.closeDialog();
-          return;
+          if (catId !== oldCatId) {
+            await updateCount({
+              id: catId,
+              oldId: oldCatId,
+              table: this.table,
+              token: this.token,
+              action: "update"
+            });
+          }
+
+          this.notifyVue(NEWSMESSAGES.SUCCESS.UPDATED, "done", "success");
+        } else {
+          this.notifyVue(NEWSMESSAGES.REJECT.NOT_UPDATED, "warning", "danger");
         }
         this.isLoading = false;
         this.notifyVue(query.message, "warning", "danger");
@@ -171,7 +236,14 @@ export default {
         this.news.splice(index, 1);
         this.count = this.count - 1;
 
-        this.notifyVue(result.message, "done", "success");
+        await updateCount({
+          id: catId,
+          table: this.table,
+          token: this.token,
+          action: "remove"
+        });
+
+        this.notifyVue(NEWSMESSAGES.SUCCESS.DELETED, "done", "success");
       } else {
         this.notifyVue(result.message, "warning", "danger");
         return;
