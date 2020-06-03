@@ -25,7 +25,7 @@
             labelTitle="Виберіть категорію для новини"
             labelNotFound="Не знайдено"
             textProp="title"
-            table="news"
+            :table="table"
             v-model="value.category"
           />
 
@@ -69,6 +69,7 @@ export default {
       type: Function,
       required: true
     },
+    table: [String, Number],
     value: {
       type: Object,
       default() {

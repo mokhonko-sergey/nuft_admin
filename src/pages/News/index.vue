@@ -78,6 +78,7 @@
       :isActive="isActiveDialog"
       :action="computedAction"
       :isLoading="isLoading"
+      :table="table"
       @close-dialog="closeDialog()"
       v-model="selectedItem"
     />
@@ -101,7 +102,7 @@ const {
   uploadTitlePhoto
 } = new News();
 const { delPicture } = new Gallery();
-const { updateCount } = new Categories();
+const { updateCount, getCategories } = new Categories();
 
 //Functions
 const isItemHasPhoto = item => {
@@ -147,6 +148,7 @@ export default {
     startAt: 0,
     itemsOnPage: 10,
     news: [],
+    categories: null,
     selectedItem: {},
     count: null,
     selectedAction: "create",
@@ -426,7 +428,8 @@ export default {
     },
 
     categoryName(category) {
-      return !_.isUndefined(category) ? category.title : "-";
+      const el = this.categories.find(el => el.id === category);
+      return !_.isUndefined(el) ? el.title : "-";
     },
 
     async search(value, startAt, count) {
@@ -464,7 +467,9 @@ export default {
   async created() {
     this.isMainLoading = true;
     const news = await getNews(0, this.itemsOnPage);
+    const getAllCategories = await getCategories(this.table);
     this.isMainLoading = false;
+    this.categories = getAllCategories.data;
     this.createNewsData(news);
   }
 };
