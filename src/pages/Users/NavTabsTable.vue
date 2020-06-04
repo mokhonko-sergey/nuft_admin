@@ -24,6 +24,7 @@
           </md-button>
           <md-button
             class="md-just-icon md-simple md-default"
+            v-if="isSameUser(item.uid)"
             @click="$emit('block-user', item)"
           >
             <md-icon>block</md-icon>
@@ -31,6 +32,7 @@
           </md-button>
           <md-button
             class="md-just-icon md-simple md-danger"
+            v-if="isSameUser(item.uid)"
             @click="$emit('delete-user', item.uid)"
           >
             <md-icon>close</md-icon>
@@ -67,6 +69,9 @@ export default {
     },
     userName(name) {
       return name === "admin" ? "Адміністратор" : "Модератор";
+    },
+    isSameUser(id) {
+      return id !== this.$store.getters.getUser.userId;
     }
   }
 };

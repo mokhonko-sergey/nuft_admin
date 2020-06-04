@@ -98,6 +98,7 @@ export default {
     },
 
     async deleteUser(id) {
+      if (!window.confirm("Ви дійсно бажаєте видалити користувача?")) return;
       const result = await delUser(id, this.token);
       if (result.success) {
         this.notifyVue(RESPONSE_MESSAGES.SUCCESS.DELETED, "done", "success");
