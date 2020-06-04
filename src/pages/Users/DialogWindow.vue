@@ -8,8 +8,8 @@
           <md-field>
             <label for="rules">Права користувача</label>
             <md-select v-model="value.displayName" name="rules" id="rules">
-              <md-option value="Адміністратор">Адміністратор</md-option>
-              <md-option value="Користувач">Користувач</md-option>
+              <md-option value="admin">Адміністратор</md-option>
+              <md-option value="user">Модератор</md-option>
             </md-select>
           </md-field>
         </div>

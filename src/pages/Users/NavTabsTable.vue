@@ -4,15 +4,16 @@
       <md-table-row>
         <md-table-head>Email</md-table-head>
         <md-table-head>Роль користувача</md-table-head>
-        <md-table-head>Останній час входу</md-table-head>
         <md-table-head>Дії</md-table-head>
       </md-table-row>
 
-      <md-table-row slot="md-table-row" v-for="item in data" :key="item.uid">
+      <md-table-row
+        slot="md-table-row"
+        v-for="item in trasformData"
+        :key="item.uid"
+      >
         <md-table-cell>{{ item.email }}</md-table-cell>
         <md-table-cell>{{ item.displayName }}</md-table-cell>
-        <md-table-cell>{{ item.metadata.lastSignInTime }}</md-table-cell>
-
         <md-table-cell>
           <md-button
             class="md-just-icon md-simple md-primary"
@@ -50,13 +51,22 @@ export default {
   },
   data() {
     return {
-      selected: [],
-      items: this.data
+      selected: []
     };
+  },
+  computed: {
+    trasformData() {
+      return this.data.map(el => {
+        return { ...el, displayName: this.userName(el.displayName) };
+      });
+    }
   },
   methods: {
     openDialog(item) {
       this.$emit("active-dialog", item);
+    },
+    userName(name) {
+      return name === "admin" ? "Адміністратор" : "Модератор";
     }
   }
 };
