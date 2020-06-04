@@ -18,12 +18,13 @@ export default {
   },
   mutations: {
     setUser(state, payload) {
-      const { userId, token, refreshToken, expired } = payload;
+      const { userId, token, refreshToken, expired, role } = payload;
       state.user = {
         userId,
         token,
         refreshToken,
-        expired
+        expired,
+        role
       };
     }
   },
@@ -37,12 +38,20 @@ export default {
             message: query.message
           };
 
-        const { idToken, refreshToken, localId, expiresIn } = query.data;
+        const {
+          idToken,
+          refreshToken,
+          localId,
+          expiresIn,
+          displayName
+        } = query.data;
+
         const userData = {
           userId: localId,
           token: idToken,
           refreshToken,
-          expired: Date.now() + parseInt(expiresIn) * 1000
+          expired: Date.now() + parseInt(expiresIn) * 1000,
+          role: displayName
         };
 
         commit("setUser", userData);
@@ -91,6 +100,9 @@ export default {
   getters: {
     getUser: state => {
       return state.user;
+    },
+    isAdmin: state => {
+      return state.user.role === "admin";
     }
   }
 };
