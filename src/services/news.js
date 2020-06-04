@@ -55,4 +55,10 @@ export default class News extends HttpMethods {
     };
     return await this._get("news", { params, options });
   };
+
+  uploadTitlePhoto = async (id, file) => {
+    const formdata = new FormData();
+    formdata.append("file", file);
+    return await this._post(`gallery/news/${id}`, { body: formdata });
+  };
 }

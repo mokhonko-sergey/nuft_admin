@@ -1,30 +1,25 @@
 import VueRouter from "vue-router";
-import routes from './routes';
-import store from '../store';
+import routes from "./routes";
+import store from "@/store";
 
 // configure router
-const router =  new VueRouter({
-  mode: 'history',
+const router = new VueRouter({
+  mode: "history",
   routes,
-  linkExactActiveClass: "nav-item active",
+  linkExactActiveClass: "nav-item active"
 });
 
 router.beforeEach(async (to, from, next) => {
-  const { userId, refreshToken, expired } = store.getters.getUser;
+  store.dispatch("checkPersistence");
+  const { expired, refreshToken } = store.getters.getUser;
+  const isExpiredToken = expired ? expired - Date.now() < 0 : true;
 
-  const isExpired = Date.parse(expired) > Date.now();
+  if (isExpiredToken && refreshToken) {
+    await store.dispatch("updateTokens", refreshToken);
+  }
 
-  // if(!isExpired && expired){
-  //   const query = await store.dispatch('updateUserToken', { refreshToken });
-  //   if(query.success) {
-  //     const { token, refreshToken, expired} = query;
-  //     store.commit('', { token, refreshToken, expired });
-  //   }
-  // }
-
-  (to.name !== 'Login' && !userId && !isExpired) 
-    ? next ({ name: "Login" })
-    : next();
+  const { token, userId } = store.getters.getUser;
+  to.name !== "Login" && !token && !userId ? next({ name: "Login" }) : next();
 });
 
 export default router;

@@ -3,8 +3,7 @@ class HttpMethods {
     this._baseUrl = "https://us-central1-nuft-kebop.cloudfunctions.net";
   }
 
-  _get = async (url, { params, options }) => {
-    params = params || "";
+  _get = async (url, { params = "", options = { method: "GET" } } = {}) => {
     const res = await fetch(`${this._baseUrl}/${url}${params}`, options);
     return await res.json();
   };
