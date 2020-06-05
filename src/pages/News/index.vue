@@ -427,8 +427,7 @@ export default {
       return;
     },
 
-    categoryName(category) {
-      const el = this.categories.find(el => el.id === category);
+    categoryName(el) {
       return !_.isUndefined(el) ? el.title : "-";
     },
 
@@ -467,9 +466,7 @@ export default {
   async created() {
     this.isMainLoading = true;
     const news = await getNews(0, this.itemsOnPage);
-    const getAllCategories = await getCategories(this.table);
     this.isMainLoading = false;
-    this.categories = getAllCategories.data;
     this.createNewsData(news);
   }
 };
