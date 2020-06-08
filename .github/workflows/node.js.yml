@@ -1,11 +1,8 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Build and Deploy
 on:
   push:
     branches:
-      - prodaction
+      - production
 
 jobs:
   build:
@@ -13,19 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-      - uses: actions/checkout@v1
+        uses: actions/checkout@production
       - name: Install Dependencies
         run: npm install
       - name: Build
         run: npm run build
-              
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@production
+        with:
+          name: dist
+          path: dist
   deploy:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Firebase Deploy
-      - uses: actions/checkout@v1
+      - name: Checkout Repo
+        uses: actions/checkout@prodaction
+      - name: Download Artifact
+        uses: actions/download-artifact@production
+        with:
+          name: dist
+          path: dist
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@production
         with:
           args: deploy --only hosting:admin-nuft-kebop
         env:
