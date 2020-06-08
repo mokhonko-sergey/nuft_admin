@@ -1,7 +1,5 @@
 {
   "hosting": {
-    "site": "admin-nuft-kebop",
-    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
