@@ -56,12 +56,12 @@ export default {
         name: "Користувачі",
         to: "/users",
         icon: "person"
-      },
-      {
-        name: "User Profile",
-        to: "/user",
-        icon: "person"
       }
+      // {
+      //   name: "User Profile",
+      //   to: "/user",
+      //   icon: "person"
+      // }
     ]
   }),
   computed: {
