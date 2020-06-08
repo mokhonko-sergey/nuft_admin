@@ -67,13 +67,10 @@ export default {
           if (data.success) {
             this.password = this.email = null;
             this.$router.push({ name: "Dashboard" });
-          } else {
-            console.log(data.message);
           }
           this.isLoading = false;
         })
         .catch(err => {
-          console.log(err);
           this.isLoading = false;
         });
     }

@@ -19,8 +19,7 @@
             </div>
             <div class="md-layout-item md-size-25 md-xsmall-size-100 allign">
               <md-button class="md-primary" @click="openDialogForNewRecord()">
-                <md-icon> note_add</md-icon>
-                Додати новину
+                <md-icon>note_add</md-icon>Додати новину
               </md-button>
             </div>
           </div>
@@ -116,7 +115,6 @@ const updateImage = async item => {
         ? await uploadTitlePhoto(item.id, item.photo[0].file)
         : false;
     } catch (err) {
-      console.error(err);
       this.notifyVue("Image did not update", "warning", "danger");
     }
   }
@@ -128,9 +126,7 @@ const deleteImage = async item => {
     const filename = item.photo.filename;
     try {
       await delPicture(filename);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 };
 
@@ -213,7 +209,6 @@ export default {
           return;
         }
       } catch (err) {
-        console.error(err);
         this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
         this.isLoading = false;
         return;
@@ -297,7 +292,6 @@ export default {
         }
       } catch (err) {
         this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
-        console.error(err);
       }
 
       this.isLoading = false;
@@ -365,7 +359,6 @@ export default {
         this.notifyVue(NEWSMESSAGES.REJECT.NOT_DRAFT, "warning", "danger");
       } catch (err) {
         this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
-        console.error(err);
       }
     },
 
