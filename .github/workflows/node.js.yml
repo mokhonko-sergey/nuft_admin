@@ -2,8 +2,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - prod
-      - realise
+      - production
 
 jobs:
   build:
