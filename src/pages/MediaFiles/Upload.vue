@@ -1,6 +1,6 @@
 <template>
   <md-dialog :md-active.sync="isActive">
-    <md-dialog-title>Upload Files</md-dialog-title>
+    <md-dialog-title>Завантаження файлів</md-dialog-title>
     <md-dialog-content>
       <div class="md-layout md-alignment-center md-size-100">
         <div class="md-layout-item md-size-100 custom__md-layout-item">
@@ -14,7 +14,7 @@
           />
           <md-button class="md-primary" @click="choseFile()">
             <md-icon>attach_file</md-icon>
-            Choose files
+            Оберіть файли
           </md-button>
         </div>
 
@@ -36,7 +36,7 @@
             <img :src="fileSrc" alt="image" class="img-preview" />
             <md-field>
               <md-icon>description</md-icon>
-              <label>Description</label>
+              <label>Короткий опис</label>
               <md-input v-model="files[index].description"></md-input>
             </md-field>
           </div>
@@ -46,13 +46,13 @@
     <md-dialog-actions>
       <md-button class="md-default" @click="closeDialog()">
         <md-icon>close</md-icon>
-        Close
+        Закрити
       </md-button>
       <md-button class="md-success" @click="upload()">
         <loading v-if="uploading" />
         <span v-else>
           <md-icon>save</md-icon>
-          Save
+          Завантажити
         </span>
       </md-button>
     </md-dialog-actions>
@@ -107,7 +107,7 @@ export default {
 
     async upload() {
       if (this.files.length === 0) {
-        this.notifyVue("Choose files, please!", "warning", "danger");
+        this.notifyVue("Оберіть файл зображення.", "warning", "danger");
         return;
       }
 
@@ -120,11 +120,14 @@ export default {
       const resArr = await Promise.all(queriesArr);
       resArr.forEach(el => {
         if (el.success) {
-          const messages = el.messages.join(" ");
-          this.notifyVue(messages, "done", "success");
+          this.notifyVue("Файл успішно завантажено", "done", "success");
         } else {
           const messages = el.messages.join(" ");
-          this.notifyVue(messages, "warning", "danger");
+          this.notifyVue(
+            "Сталася помилка при завантаженні",
+            "warning",
+            "danger"
+          );
         }
       });
 

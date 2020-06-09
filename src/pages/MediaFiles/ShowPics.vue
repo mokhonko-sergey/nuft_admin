@@ -4,15 +4,15 @@
       <md-card-header data-background-color="green">
         <div class="md-layout md-size-100">
           <div class="md-layout-item md-size-75 md-xsmall-size-100">
-            <h4 class="title">Table on Plain Background</h4>
-            <p class="category">Here is a subtitle for this table</p>
+            <h4 class="title">Галерея</h4>
+            <p class="category">Ваші зображення.</p>
           </div>
           <div
             class="md-layout-item md-size-25 custom__md-layout-item md-xsmall-size-100"
           >
             <md-button class="md-primary" @click="$emit('dialog')">
               <md-icon class="md-size-2x">backup</md-icon>
-              Upload Files
+              Завантажити зображення
             </md-button>
           </div>
         </div>
@@ -52,6 +52,7 @@ import { Gallery } from "@/services/index";
 const { getPics, delPicture } = new Gallery();
 
 export default {
+  name: "media-files",
   data: () => ({
     isLoad: false,
     itemsOnPage: 25,
@@ -62,37 +63,40 @@ export default {
   computed: {
     pages() {
       return Math.ceil(this.items / this.itemsOnPage);
+    },
+    lastImageOnPage() {
+      return this.images.length + this.startAt;
     }
   },
   methods: {
     async fetchPics(itemsOnPage, startAt) {
-      this.isLoad = true;
       const result = await getPics(itemsOnPage, startAt);
-      this.images = result.data;
+      result.data.forEach(el => {
+        this.images.push(el);
+      });
       this.items = result.сountOfItems;
-      this.isLoad = false;
     },
 
     async delPic(name) {
-      this.isLoad = true;
+      if (!window.confirm("Ви дійсно бажаєте видалити зображення?")) return;
       const res = await delPicture(name);
       if (res.success) {
         const index = this.images.findIndex(el => el.filename === name);
         this.images.splice(index, 1);
-        this.notifyVue(res.message, "done", "success");
-
-        this.fetchPics(this.itemsOnPage, this.startAt);
+        this.notifyVue("Файл видалено", "done", "success");
+        if (this.lastImageOnPage < this.items - 1) {
+          this.fetchPics(1, this.lastImageOnPage + 1);
+        }
       } else {
-        this.notifyVue(res.message, "warning", "danger");
+        this.notifyVue("Сталася помилка при видаленні", "warning", "danger");
       }
-      this.isLoad = false;
     },
 
-    ifChangePage(itemsOnPage, startAt) {
+    async ifChangePage(itemsOnPage, startAt) {
+      this.images = [];
       this.itemsOnPage = itemsOnPage;
       this.startAt = startAt;
-
-      this.fetchPics(itemsOnPage, startAt);
+      await this.fetchPics(itemsOnPage, startAt);
     },
 
     notifyVue(
@@ -107,9 +111,15 @@ export default {
   },
   created() {
     eventBus.$on("updatePics", () => {
+      this.isLoad = true;
+      this.images = [];
       this.fetchPics(this.itemsOnPage, this.startAt);
+      this.isLoad = false;
     });
+
+    this.isLoad = true;
     this.fetchPics(this.itemsOnPage, this.startAt);
+    this.isLoad = false;
   },
   components: {
     Pagination,
