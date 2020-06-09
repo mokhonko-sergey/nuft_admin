@@ -12,14 +12,13 @@
           >
             <md-button class="md-primary" @click="$emit('dialog')">
               <md-icon class="md-size-2x">backup</md-icon>
-              Завантажити зображення
             </md-button>
           </div>
         </div>
       </md-card-header>
       <md-card-content class="images-content">
         <loading v-if="isLoad" />
-        <div class="image-container" v-for="img in images" :key="img.id" v-else>
+        <div class="image-container" v-for="img in value" :key="img.id" v-else>
           <md-button
             class="md-fab md-btn-fab md-danger custom__md-btn"
             @click="delPic(img.filename)"
@@ -39,90 +38,26 @@
         </div>
       </md-card-content>
     </md-card>
-    <pagination :pages="pages" @pageQuery="ifChangePage"></pagination>
   </div>
 </template>
 
 <script>
-import { eventBus } from "../../main";
-import Pagination from "./Pagination";
 import { MainLoading } from "@/components/Loading/index.js";
 
-import { Gallery } from "@/services/index";
-const { getPics, delPicture } = new Gallery();
-
 export default {
-  name: "media-files",
-  data: () => ({
-    isLoad: false,
-    itemsOnPage: 25,
-    startAt: null,
-    items: null,
-    images: []
-  }),
-  computed: {
-    pages() {
-      return Math.ceil(this.items / this.itemsOnPage);
-    },
-    lastImageOnPage() {
-      return this.images.length + this.startAt;
-    }
-  },
-  methods: {
-    async fetchPics(itemsOnPage, startAt) {
-      const result = await getPics(itemsOnPage, startAt);
-      result.data.forEach(el => {
-        this.images.push(el);
-      });
-      this.items = result.сountOfItems;
-    },
-
-    async delPic(name) {
-      if (!window.confirm("Ви дійсно бажаєте видалити зображення?")) return;
-      const res = await delPicture(name);
-      if (res.success) {
-        const index = this.images.findIndex(el => el.filename === name);
-        this.images.splice(index, 1);
-        this.notifyVue("Файл видалено", "done", "success");
-        if (this.lastImageOnPage < this.items - 1) {
-          this.fetchPics(1, this.lastImageOnPage + 1);
-        }
-      } else {
-        this.notifyVue("Сталася помилка при видаленні", "warning", "danger");
+  name: "show-images",
+  props: {
+    value: {
+      type: Array,
+      default: () => {
+        return [];
       }
-    },
-
-    async ifChangePage(itemsOnPage, startAt) {
-      this.images = [];
-      this.itemsOnPage = itemsOnPage;
-      this.startAt = startAt;
-      await this.fetchPics(itemsOnPage, startAt);
-    },
-
-    notifyVue(
-      message,
-      icon,
-      type,
-      verticalAlign = "top",
-      horizontalAlign = "right"
-    ) {
-      this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
-  created() {
-    eventBus.$on("updatePics", () => {
-      this.isLoad = true;
-      this.images = [];
-      this.fetchPics(this.itemsOnPage, this.startAt);
-      this.isLoad = false;
-    });
-
-    this.isLoad = true;
-    this.fetchPics(this.itemsOnPage, this.startAt);
-    this.isLoad = false;
-  },
+  data: () => ({
+    isLoad: false
+  }),
   components: {
-    Pagination,
     loading: MainLoading
   }
 };
