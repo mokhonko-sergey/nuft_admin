@@ -1,6 +1,12 @@
 import * as firebase from "firebase";
+import {
+  setPersistenceLocal,
+  setPersistenceSession,
+  getPersistence,
+  clearPersistence
+} from "./persistence";
 import { Auth } from "@/services/index";
-const { isAuthorized } = new Auth();
+const { signIn, refreshToken } = new Auth();
 export default {
   state: {
     user: {
@@ -12,36 +18,51 @@ export default {
   },
   mutations: {
     setUser(state, payload) {
-      const { userId, token, refreshToken, expired } = payload;
+      const { userId, token, refreshToken, expired, role } = payload;
       state.user = {
         userId,
         token,
         refreshToken,
-        expired
+        expired,
+        role
       };
     }
   },
   actions: {
-    async signIn({ commit }, { email, pass }) {
+    async signIn({ commit }, { email, pass, persistence = false }) {
       try {
-        const loginQyery = await firebase
-          .auth()
-          .signInWithEmailAndPassword(email, pass);
-        const user = loginQyery.user;
-        const userResult = await user.getIdTokenResult();
+        const query = await signIn(email, pass);
+        if (!query.success)
+          return {
+            success: false,
+            message: query.message
+          };
+
+        const {
+          idToken,
+          refreshToken,
+          localId,
+          expiresIn,
+          displayName
+        } = query.data;
 
         const userData = {
-          userId: user.uid,
-          token: userResult.token,
-          refreshToken: user.refreshToken,
-          expired: userResult.expirationTime
+          userId: localId,
+          token: idToken,
+          refreshToken,
+          expired: Date.now() + parseInt(expiresIn) * 1000,
+          role: displayName
         };
 
         commit("setUser", userData);
 
+        persistence
+          ? setPersistenceLocal(userData)
+          : setPersistenceSession(userData);
+
         return {
           success: true,
-          message: "User is loged in"
+          message: "User sign in"
         };
       } catch (err) {
         return {
@@ -50,19 +71,38 @@ export default {
         };
       }
     },
-    //unused
-    async checkUserToken({ state }) {
-      try {
-        const query = await isAuthorized(state.user.token);
-        return query.authenticated;
-      } catch (err) {
-        return false;
+    async signOut({ commit }) {
+      await firebase.auth().signOut();
+      clearPersistence();
+      commit("setUser", {
+        userId: null,
+        token: null,
+        refreshToken: null,
+        expired: null
+      });
+    },
+    checkPersistence({ commit }) {
+      const data = JSON.parse(getPersistence());
+      data ? commit("setUser", data) : commit("setUser", {});
+    },
+    async updateTokens({ commit }, token) {
+      const res = await refreshToken(token);
+      if (res.success) {
+        commit("setUser", {
+          userId: res.data.user_id,
+          token: res.data.access_token,
+          refreshToken: res.data.refresh_token,
+          expired: Date.now() + parseInt(res.data.expires_in) * 1000
+        });
       }
     }
   },
   getters: {
     getUser: state => {
       return state.user;
+    },
+    isAdmin: state => {
+      return state.user.role === "admin";
     }
   }
 };

@@ -5,10 +5,10 @@
 
     <nav-tabs-card>
       <template slot="content">
-        <span class="md-nav-tabs-title">Users:</span>
+        <!-- <span class="md-nav-tabs-title"></span> -->
         <md-tabs class="md-success" md-alignment="left">
           <!-- List Of Active Users -->
-          <md-tab id="tab-home" md-label="Active" md-icon="face">
+          <md-tab id="tab-home" md-label="Активні" md-icon="face">
             <nav-tabs-table
               :data="activeUsers"
               @active-dialog="dialoForEditUserData"
@@ -17,7 +17,7 @@
             />
           </md-tab>
           <!-- List Of Blocked Users -->
-          <md-tab id="tab-pages" md-label="Blocked" md-icon="block">
+          <md-tab id="tab-pages" md-label="Заблоковані" md-icon="block">
             <nav-tabs-table
               :data="blockedUsers"
               @active-dialog="dialoForEditUserData"
@@ -45,10 +45,12 @@ import NavTabsCard from "./NavTabsCard";
 import NavTabsTable from "./NavTabsTable";
 import ActionsTab from "./ActionsTab";
 import DialogWindow from "./DialogWindow";
+import { RESPONSE_MESSAGES } from "./messages";
 import { Users } from "@/services/index";
 const { getAllUsers, delUser, updateUserInfo, createNewUser } = new Users();
 
 export default {
+  name: "users",
   components: {
     NavTabsCard,
     NavTabsTable,
@@ -83,26 +85,27 @@ export default {
     },
     dialogWindowTitle() {
       if (this.action === "create") {
-        return "New User";
+        return "Новий користувач";
       }
 
-      return "Update User Info";
+      return "Оновити інформацію про користувача";
     }
   },
   methods: {
     async getUsers() {
-      const result = await getAllUsers(this.token);
-      this.users = result;
+      const query = await getAllUsers(this.token);
+      this.users = query.success ? query.result : [];
     },
 
     async deleteUser(id) {
+      if (!window.confirm("Ви дійсно бажаєте видалити користувача?")) return;
       const result = await delUser(id, this.token);
       if (result.success) {
-        this.notifyVue(result.message, "done", "success");
+        this.notifyVue(RESPONSE_MESSAGES.SUCCESS.DELETED, "done", "success");
         this.getUsers();
         return;
       }
-      this.notifyVue(result.message, "warning", "danger");
+      this.notifyVue(RESPONSE_MESSAGES.REJECT.NOT_DELETED, "warning", "danger");
     },
 
     async blockUser(data) {
@@ -115,13 +118,20 @@ export default {
       try {
         const result = await updateUserInfo(this.token, newUserData);
         if (result.success) {
-          this.notifyVue(result.message, "done", "success");
+          const message = data.disabled
+            ? RESPONSE_MESSAGES.SUCCESS.UNBLOKED
+            : RESPONSE_MESSAGES.SUCCESS.BLOKED;
+          this.notifyVue(message, "done", "success");
           this.getUsers();
           return;
         }
-        this.notifyVue(result.message, "warning", "danger");
+        this.notifyVue(RESPONSE_MESSAGES.REJECT.NOT_BLOCK, "warning", "danger");
       } catch (err) {
-        console.log(err);
+        this.notifyVue(
+          `${RESPONSE_MESSAGES.REJECT.ERROR} ${err.message}`,
+          "warning",
+          "danger"
+        );
       }
     },
 
@@ -145,16 +155,24 @@ export default {
           this.isLoading = false;
           this.cleanFormFields();
           this.isActiveDialog = false;
-          this.notifyVue(query.message, "done", "success");
+          this.notifyVue(RESPONSE_MESSAGES.SUCCESS.NEW_USER, "done", "success");
           this.getUsers();
           return;
         }
 
-        this.notifyVue(query.message, "warning", "danger");
+        this.notifyVue(
+          `${RESPONSE_MESSAGES.REJECT.NOT_NEW_USER} ${query.message}`,
+          "warning",
+          "danger"
+        );
         this.isLoading = false;
       } catch (err) {
-        console.log(err);
         this.isLoading = false;
+        this.notifyVue(
+          `${RESPONSE_MESSAGES.REJECT.ERROR} ${err.message}`,
+          "warning",
+          "danger"
+        );
       }
     },
 
@@ -180,16 +198,24 @@ export default {
           this.isLoading = false;
           this.isActiveDialog = false;
           this.cleanFormFields();
-          this.notifyVue(query.message, "done", "success");
+          this.notifyVue(RESPONSE_MESSAGES.SUCCESS.UPDATED, "done", "success");
           this.getUsers();
           return;
         }
 
         this.isLoading = false;
-        this.notifyVue(query.message, "warning", "danger");
+        this.notifyVue(
+          `${RESPONSE_MESSAGES.REJECT.NOT_UPDATED} ${query.message}`,
+          "warning",
+          "danger"
+        );
       } catch (err) {
-        console.log(err);
         this.isLoading = false;
+        this.notifyVue(
+          `${RESPONSE_MESSAGES.REJECT.ERROR} ${err.message}`,
+          "warning",
+          "danger"
+        );
       }
     },
 
@@ -199,7 +225,7 @@ export default {
     },
 
     dialoForEditUserData(value) {
-      this.user = value;
+      this.user = Object.assign({}, value);
       this.action = "edit";
       this.isActiveDialog = !this.isActiveDialog;
     },
@@ -223,13 +249,13 @@ export default {
       if (!pass1)
         return {
           success: false,
-          message: "Password field is empty"
+          message: RESPONSE_MESSAGES.REJECT.EMPTY_PASS
         };
 
       if (pass1 !== pass2)
         return {
           success: false,
-          message: "Passwords are not equal"
+          message: RESPONSE_MESSAGES.REJECT.PASS_NOT_MATCHED
         };
 
       return { success: true };
@@ -245,8 +271,8 @@ export default {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
   },
-  created() {
-    this.getUsers();
+  async created() {
+    await this.getUsers();
   }
 };
 </script>

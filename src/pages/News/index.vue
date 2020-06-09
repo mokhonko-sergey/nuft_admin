@@ -5,8 +5,8 @@
         <md-card-header data-background-color="green">
           <div class="md-layout md-size-100 md-alignment-center">
             <div class="md-layout-item md-size-25 md-xsmall-size-100">
-              <h4 class="title">List of news</h4>
-              <p>Create, update, delete.</p>
+              <h4 class="title">Список новин</h4>
+              <p>Керуйте новинами, як професіонал.</p>
             </div>
             <div class="md-layout-item md-size-50 md-xsmall-size-100">
               <md-autocomplete
@@ -14,26 +14,48 @@
                 v-model="searchValue"
                 :md-options="employees"
               >
-                <label>Search...</label>
+                <label>Пошук...</label>
               </md-autocomplete>
             </div>
             <div class="md-layout-item md-size-25 md-xsmall-size-100 allign">
-              <!-- flex -->
               <md-button class="md-primary" @click="openDialogForNewRecord()">
-                <md-icon> note_add</md-icon>
-                Add news
+                <md-icon>note_add</md-icon>Додати новину
               </md-button>
             </div>
           </div>
         </md-card-header>
-        <md-card-content>
+
+        <!-- NOT FOUND BLOCK -->
+        <div class="not-fond-block" v-if="count === 0">
+          <div class="row">
+            <h2>УПС... Нічого не знайдено</h2>
+          </div>
+          <div class="row">
+            <img
+              src="./img/sad-face.png"
+              alt="Sad emoji"
+              class="not-fond-block__emoji"
+            />
+          </div>
+        </div>
+        <!-- / NOT FOUND BLOCK -->
+
+        <md-card-content v-else>
           <nav-tabs-table
-            :data="transformNewsData"
-            :cells="{
-              Title: 'title',
-              'Created Time': 'created',
-              'Updated Time': 'updated'
-            }"
+            :data="news"
+            :cells="[
+              { cell: 'Назва новини', field: 'title' },
+              {
+                cell: 'Категорія',
+                field: 'category',
+                function: categoryName
+              },
+              {
+                cell: 'Час створення',
+                field: 'created',
+                function: transformTime
+              }
+            ]"
             @edit-item="openDialogForEditRecord"
             @toggle-visible-item="toggleVisible"
             @delete-item="deleteItem"
@@ -43,7 +65,7 @@
           <div class="more-block" v-if="isMore">
             <md-button class="md-success" @click="downloadMore">
               <loading v-if="isLoading" />
-              <span v-else>Show More</span>
+              <span v-else>Більше новин</span>
             </md-button>
           </div>
         </md-card-content>
@@ -51,10 +73,11 @@
     </nav-tabs-card>
     <!-- Dialog Window -->
     <dialog-window
-      title="Add Post"
+      :title="title"
       :isActive="isActiveDialog"
       :action="computedAction"
       :isLoading="isLoading"
+      :table="table"
       @close-dialog="closeDialog()"
       v-model="selectedItem"
     />
@@ -62,10 +85,13 @@
 </template>
 
 <script>
+import _ from "lodash";
+
 import { NavTabsCard, NavTabsTable } from "@/components";
 import DialogWindow from "./DialogWindow";
 import { MiniLoading, MainLoading } from "../../components/Loading";
-import { News, Gallery } from "@/services/index";
+import { News, Gallery, Categories } from "@/services/index";
+import { NEWSMESSAGES } from "./messages";
 const {
   getNews,
   deleteNews,
@@ -75,6 +101,7 @@ const {
   uploadTitlePhoto
 } = new News();
 const { delPicture } = new Gallery();
+const { updateCount, getCategories } = new Categories();
 
 //Functions
 const isItemHasPhoto = item => {
@@ -88,7 +115,6 @@ const updateImage = async item => {
         ? await uploadTitlePhoto(item.id, item.photo[0].file)
         : false;
     } catch (err) {
-      console.error(err);
       this.notifyVue("Image did not update", "warning", "danger");
     }
   }
@@ -100,9 +126,7 @@ const deleteImage = async item => {
     const filename = item.photo.filename;
     try {
       await delPicture(filename);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 };
 
@@ -120,6 +144,7 @@ export default {
     startAt: 0,
     itemsOnPage: 10,
     news: [],
+    categories: null,
     selectedItem: {},
     count: null,
     selectedAction: "create",
@@ -127,7 +152,8 @@ export default {
     isMainLoading: false,
     searchValue: null,
     employees: [],
-    timer: null
+    timer: null,
+    table: "news"
   }),
   computed: {
     token() {
@@ -138,64 +164,93 @@ export default {
         ? this.createRecord
         : this.editRecord;
     },
-    transformNewsData() {
-      return this.news.map(el => {
-        return {
-          ...el,
-          created: this.transformTime(el.created),
-          updated: this.transformTime(el.updated)
-        };
-      });
-    },
     isMore() {
       return this.news.length < this.count;
+    },
+    title() {
+      if (this.selectedAction === "create") {
+        return "Створити новину";
+      }
+      return "Редагувати новину";
     }
   },
   methods: {
     async createRecord() {
-      const { title, content, visible } = this.selectedItem;
+      const {
+        title,
+        content,
+        description,
+        visible,
+        category
+      } = this.selectedItem;
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : "";
       this.isLoading = true;
       let query;
 
       //Create record
       try {
-        query = await createNews({ title, content, visible }, this.token);
+        query = await createNews(
+          {
+            title,
+            content,
+            visible,
+            category: catId,
+            description
+          },
+          this.token
+        );
 
         if (!query.success) {
-          this.notifyVue(query.message, "warning", "danger");
+          this.notifyVue(NEWSMESSAGES.REJECT.NOT_CREATED, "warning", "danger");
           this.isLoading = true;
           return;
         }
       } catch (err) {
-        console.error(err);
-        this.notifyVue(
-          "Can't save news. Try again later.",
-          "warning",
-          "danger"
-        );
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
         this.isLoading = false;
         return;
       }
 
       // Upload file
+      await updateImage({ ...this.selectedItem, id: query.key });
 
-      await updateImage({ ...this.selectedItem, id: query.key }); ///check
+      await updateCount({
+        id: catId,
+        table: this.table,
+        token: this.token,
+        action: "new"
+      });
 
       this.isLoading = false;
-      this.notifyVue(query.message, "done", "success");
+      this.notifyVue(NEWSMESSAGES.SUCCESS.SAVED, "done", "success");
       const news = await getNews(0, 1);
       this.news = [news.data[0], ...this.news];
       this.closeDialog();
     },
 
     async editRecord() {
-      const { id } = this.selectedItem;
+      const { id, category } = this.selectedItem;
+      //get ID of new category
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : category;
       const newData = {
-        ...this.selectedItem
+        ...this.selectedItem,
+        category: catId
       };
 
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
+      //get ID of old category
+      const oldCategory = item.category;
+      const oldCatId =
+        oldCategory !== undefined && oldCategory.hasOwnProperty("id")
+          ? oldCategory.id
+          : oldCategory;
       this.isLoading = true;
 
       //delete image
@@ -220,13 +275,23 @@ export default {
         if (query.success) {
           const updatedNewsData = await getNews(index, 1);
           this.news.splice(index, 1, updatedNewsData.data[0]);
-          this.notifyVue("News updated", "done", "success");
+
+          if (catId !== oldCatId) {
+            await updateCount({
+              id: catId,
+              oldId: oldCatId,
+              table: this.table,
+              token: this.token,
+              action: "update"
+            });
+          }
+
+          this.notifyVue(NEWSMESSAGES.SUCCESS.UPDATED, "done", "success");
         } else {
-          this.notifyVue(query.message, "warning", "danger");
+          this.notifyVue(NEWSMESSAGES.REJECT.NOT_UPDATED, "warning", "danger");
         }
       } catch (err) {
-        this.notifyVue("Can't update news", "warning", "danger");
-        console.error(err);
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
       }
 
       this.isLoading = false;
@@ -234,8 +299,17 @@ export default {
     },
 
     async deleteItem(id) {
+      if (!window.confirm("Ви дійсно бажаєте видалити запис?")) return;
+
       const index = this.news.findIndex(el => el.id === id);
       const item = this.news[index];
+      //find category
+      const { category } = item;
+      const catId =
+        category !== undefined && category.hasOwnProperty("id")
+          ? category.id
+          : category;
+
       // delete image
       await deleteImage(item);
       // delete news from DB
@@ -243,9 +317,17 @@ export default {
       if (result.success) {
         this.news.splice(index, 1);
         this.count = this.count - 1;
-        this.notifyVue(result.message, "done", "success");
+
+        await updateCount({
+          id: catId,
+          table: this.table,
+          token: this.token,
+          action: "remove"
+        });
+
+        this.notifyVue(NEWSMESSAGES.SUCCESS.DELETED, "done", "success");
       } else {
-        this.notifyVue(result.message, "warning", "danger");
+        this.notifyVue(NEWSMESSAGES.REJECT.NOT_DELETED, "warning", "danger");
         return;
       }
 
@@ -267,13 +349,16 @@ export default {
         if (query.success) {
           this.news.splice(index, 1, newData);
 
-          this.notifyVue(query.message, "done", "success");
+          const message = item.visible
+            ? NEWSMESSAGES.SUCCESS.DRAFT
+            : NEWSMESSAGES.SUCCESS.PUBLISHED;
+          this.notifyVue(message, "done", "success");
           return;
         }
 
-        this.notifyVue(query.message, "warning", "danger");
+        this.notifyVue(NEWSMESSAGES.REJECT.NOT_DRAFT, "warning", "danger");
       } catch (err) {
-        console.error(err);
+        this.notifyVue(NEWSMESSAGES.REJECT.ERROR, "warning", "danger");
       }
     },
 
@@ -325,7 +410,7 @@ export default {
 
     transformTime(time) {
       if (time) {
-        return new Date(time).toLocaleDateString("ua-UA", {
+        return new Date(time).toLocaleDateString("ukr", {
           year: "numeric",
           month: "long",
           day: "numeric"
@@ -333,6 +418,10 @@ export default {
       }
 
       return;
+    },
+
+    categoryName(el) {
+      return !_.isUndefined(el) ? el.title : "-";
     },
 
     async search(value, startAt, count) {
@@ -348,7 +437,7 @@ export default {
       this.isMainLoading = !this.isMainLoading;
       this.createNewsData({
         newsCount: 0,
-        data: [{ title: query.message }]
+        data: []
       });
     },
 
@@ -368,7 +457,9 @@ export default {
     }
   },
   async created() {
+    this.isMainLoading = true;
     const news = await getNews(0, this.itemsOnPage);
+    this.isMainLoading = false;
     this.createNewsData(news);
   }
 };
@@ -389,10 +480,25 @@ export default {
 .md-field label {
   color: #fff !important;
 }
-
 .allign {
   display: flex;
   align-content: center;
   justify-content: center;
+}
+.not-fond-block {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  padding: 25px;
+}
+.not-fond-block .row {
+  text-align: center;
+}
+.not-fond-block__emoji {
+  width: 100%;
+  height: auto;
+  max-width: 250px;
 }
 </style>

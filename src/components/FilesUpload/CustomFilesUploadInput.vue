@@ -10,8 +10,8 @@
     />
     <md-button class="md-primary" @click="choseFile()" v-show="isShowButton">
       <md-icon>attach_file</md-icon>
-      <span v-if="isMultiple">Choose files</span>
-      <span v-else>Choose file</span>
+      <span v-if="isMultiple">Обрати файли</span>
+      <span v-else>Обрати файл</span>
     </md-button>
   </div>
 </template>

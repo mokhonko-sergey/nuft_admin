@@ -4,43 +4,14 @@
 
     <side-bar>
       <mobile-menu slot="content"></mobile-menu>
-      <sidebar-link to="/dashboard">
-        <md-icon>dashboard</md-icon>
-        <p>Dashboard</p>
+      <sidebar-link
+        :to="route.to"
+        v-for="(route, index) in userRoutes"
+        :key="`route-${index}`"
+      >
+        <md-icon>{{ route.icon }}</md-icon>
+        <p>{{ route.name }}</p>
       </sidebar-link>
-
-      <sidebar-link to="/news">
-        <md-icon>subject</md-icon>
-        <p>News</p>
-      </sidebar-link>
-
-      <sidebar-link to="/mediafiles">
-        <md-icon>wallpaper</md-icon>
-        <p>Media Files</p>
-      </sidebar-link>
-
-      <sidebar-link to="/users">
-        <md-icon>person</md-icon>
-        <p>Users</p>
-      </sidebar-link>
-
-      <sidebar-link to="/user">
-        <md-icon>person</md-icon>
-        <p>User Profile</p>
-      </sidebar-link>
-      <!-- <sidebar-link to="/table">
-        <md-icon>content_paste</md-icon>
-        <p>Table list</p>
-      </sidebar-link>
-      <sidebar-link to="/typography">
-        <md-icon>library_books</md-icon>
-        <p>Typography</p>
-      </sidebar-link>
-      <sidebar-link to="/notifications">
-        <md-icon>notifications</md-icon>
-        <p>Notifications</p>
-      </sidebar-link> -->
-
     </side-bar>
 
     <div class="main-panel">
@@ -60,6 +31,48 @@ import DashboardContent from "./Content.vue";
 import MobileMenu from "@/pages/Layout/MobileMenu.vue";
 
 export default {
+  name: "side-menu",
+  data: () => ({
+    routes: [
+      {
+        name: "Dashboard",
+        to: "/dashboard",
+        icon: "dashboard",
+        isAdmin: true
+      },
+      {
+        name: "Новини",
+        to: "/news",
+        icon: "subject",
+        isAdmin: true
+      },
+      {
+        name: "Медіа файли",
+        to: "/mediafiles",
+        icon: "wallpaper",
+        isAdmin: true
+      },
+      {
+        name: "Користувачі",
+        to: "/users",
+        icon: "person"
+      }
+      // {
+      //   name: "User Profile",
+      //   to: "/user",
+      //   icon: "person"
+      // }
+    ]
+  }),
+  computed: {
+    userRoutes() {
+      return this.$store.getters.isAdmin
+        ? this.routes
+        : this.routes.filter(el => {
+            if (el.isAdmin === true) return el;
+          });
+    }
+  },
   components: {
     TopNavbar,
     DashboardContent,

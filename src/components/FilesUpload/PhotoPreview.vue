@@ -64,13 +64,12 @@ export default {
 
 .image-preview-item {
   position: relative;
-  width: 250px;
   margin: 10px;
 }
 
 .img-preview {
-  height: 250px;
-  width: auto;
+  width: 100%;
+  height: auto;
 }
 
 .custom__md-icon-button {
