@@ -132,9 +132,9 @@ export default {
       });
 
       this.uploading = false;
+      this.$emit("update-list-of-images", this.files.length);
+      this.$emit("close-dialog");
       this.clearData();
-      eventBus.$emit("updatePics");
-      this.$emit("closeDialog");
       return;
     },
 

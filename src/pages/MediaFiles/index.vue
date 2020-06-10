@@ -1,7 +1,11 @@
 <template>
   <div class="content">
     <div class="md-layout">
-      <upload @closeDialog="showUploadDialog()" :isActive="activeUpload" />
+      <upload
+        @close-dialog="showUploadDialog()"
+        @update-list-of-images="updateAfterUpload"
+        :isActive="activeUpload"
+      />
       <show-pics @dialog="showUploadDialog()" v-model="images" />
     </div>
     <intersect @enter="fetchContent()"><div></div></intersect>
@@ -34,13 +38,28 @@ export default {
     showUploadDialog() {
       this.activeUpload = !this.activeUpload;
     },
+
     async fetchPics(itemsOnPage, startAt) {
       const result = await getPics(itemsOnPage, startAt);
-      result.data.forEach(el => {
-        this.images.push(el);
-      });
       this.items = result.сountOfItems;
+      return result.data;
     },
+
+    updateList(arr, isReverse = false) {
+      arr.forEach(el => {
+        if (isReverse) {
+          this.images.unshift(el);
+        } else {
+          this.images.push(el);
+        }
+      });
+    },
+
+    async updateAfterUpload(i) {
+      const data = await this.fetchPics(i, 0);
+      this.updateList(data, true);
+    },
+
     async delPic(name) {
       if (!window.confirm("Ви дійсно бажаєте видалити зображення?")) return;
       const res = await delPicture(name);
@@ -58,10 +77,16 @@ export default {
 
     async fetchContent() {
       if (this.images.length === 0) {
-        await this.fetchPics(this.itemsOnPage, this.images.length);
+        const data = await this.fetchPics(this.itemsOnPage, this.images.length);
+        this.updateList(data);
       } else {
-        if (this.isEnd)
-          await this.fetchPics(this.itemsOnPage, this.images.length);
+        if (this.isEnd) {
+          const data = await this.fetchPics(
+            this.itemsOnPage,
+            this.images.length
+          );
+          this.updateList(data);
+        }
       }
     },
 
