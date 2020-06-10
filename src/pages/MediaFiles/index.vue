@@ -13,6 +13,7 @@
       />
     </div>
     <intersect @enter="fetchContent()"><div></div></intersect>
+    <loading v-if="isLoad" />
   </div>
 </template>
 
@@ -20,6 +21,7 @@
 import Upload from "./Upload";
 import ShowPics from "./ShowPics";
 import Intersect from "vue-intersect";
+import { MainLoading } from "@/components/Loading/index.js";
 
 import { Gallery } from "@/services/index";
 const { getPics, delPicture } = new Gallery();
@@ -78,6 +80,7 @@ export default {
     },
 
     async fetchContent() {
+      this.isLoad = !this.isLoad;
       if (this.images.length === 0) {
         const data = await this.fetchPics(this.itemsOnPage, this.images.length);
         this.updateList(data);
@@ -90,6 +93,7 @@ export default {
           this.updateList(data);
         }
       }
+      this.isLoad = !this.isLoad;
     },
 
     notifyVue(
@@ -105,7 +109,8 @@ export default {
   components: {
     Upload,
     ShowPics,
-    Intersect
+    Intersect,
+    loading: MainLoading
   }
 };
 </script>

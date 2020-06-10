@@ -17,8 +17,7 @@
         </div>
       </md-card-header>
       <md-card-content class="images-content">
-        <loading v-if="isLoad" />
-        <div class="image-container" v-for="img in value" :key="img.id" v-else>
+        <div class="image-container" v-for="img in value" :key="img.id">
           <md-button
             class="md-fab md-btn-fab md-danger custom__md-btn"
             @click="$emit('delete-item', img.filename)"
@@ -42,8 +41,6 @@
 </template>
 
 <script>
-import { MainLoading } from "@/components/Loading/index.js";
-
 export default {
   name: "show-images",
   props: {
@@ -53,12 +50,6 @@ export default {
         return [];
       }
     }
-  },
-  data: () => ({
-    isLoad: false
-  }),
-  components: {
-    loading: MainLoading
   }
 };
 </script>

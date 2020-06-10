@@ -44,7 +44,7 @@
       </div>
     </md-dialog-content>
     <md-dialog-actions>
-      <md-button class="md-default" @click="closeDialog()">
+      <md-button class="md-default" @click="$emit('close-dialog')">
         <md-icon>close</md-icon>
         Закрити
       </md-button>
