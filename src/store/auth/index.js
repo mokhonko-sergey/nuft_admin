@@ -13,7 +13,8 @@ export default {
       userId: null,
       token: null,
       refreshToken: null,
-      expired: null
+      expired: null,
+      role: null
     }
   },
   mutations: {
@@ -71,28 +72,27 @@ export default {
         };
       }
     },
-    async signOut({ commit }) {
-      await firebase.auth().signOut();
+
+    signOut({ commit }) {
       clearPersistence();
-      commit("setUser", {
-        userId: null,
-        token: null,
-        refreshToken: null,
-        expired: null
-      });
+      commit("setUser", {});
     },
+
     checkPersistence({ commit }) {
       const data = JSON.parse(getPersistence());
       data ? commit("setUser", data) : commit("setUser", {});
     },
+
     async updateTokens({ commit }, token) {
+      const { role } = JSON.parse(getPersistence());
       const res = await refreshToken(token);
       if (res.success) {
         commit("setUser", {
           userId: res.data.user_id,
           token: res.data.access_token,
           refreshToken: res.data.refresh_token,
-          expired: Date.now() + parseInt(res.data.expires_in) * 1000
+          expired: Date.now() + parseInt(res.data.expires_in) * 1000,
+          role
         });
       }
     }
