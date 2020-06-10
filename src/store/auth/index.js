@@ -3,7 +3,8 @@ import {
   setPersistenceLocal,
   setPersistenceSession,
   getPersistence,
-  clearPersistence
+  clearPersistence,
+  isRemember
 } from "./persistence";
 import { Auth } from "@/services/index";
 const { signIn, refreshToken } = new Auth();
@@ -86,14 +87,16 @@ export default {
     async updateTokens({ commit }, token) {
       const { role } = JSON.parse(getPersistence());
       const res = await refreshToken(token);
+      const data = {
+        userId: res.data.user_id,
+        token: res.data.access_token,
+        refreshToken: res.data.refresh_token,
+        expired: Date.now() + parseInt(res.data.expires_in) * 1000,
+        role
+      };
       if (res.success) {
-        commit("setUser", {
-          userId: res.data.user_id,
-          token: res.data.access_token,
-          refreshToken: res.data.refresh_token,
-          expired: Date.now() + parseInt(res.data.expires_in) * 1000,
-          role
-        });
+        commit("setUser", data);
+        isRemember() ? setPersistenceLocal(data) : setPersistenceSession(data);
       }
     }
   },

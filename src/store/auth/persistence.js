@@ -1,5 +1,10 @@
 function setPersistenceLocal(value) {
   localStorage.setItem("state", JSON.stringify(value));
+  localStorage.setItem("remember", "true");
+}
+
+function isRemember() {
+  return localStorage.getItem("remember") || false;
 }
 
 function setPersistenceSession(value) {
@@ -19,5 +24,6 @@ export {
   setPersistenceLocal,
   setPersistenceSession,
   getPersistence,
-  clearPersistence
+  clearPersistence,
+  isRemember
 };
