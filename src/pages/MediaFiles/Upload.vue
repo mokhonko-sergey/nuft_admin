@@ -163,7 +163,7 @@ export default {
 .custom__md-layout-item {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-around;
   margin-bottom: 10px;
 }
 

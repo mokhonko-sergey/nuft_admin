@@ -63,14 +63,14 @@ export default {
 
 .images-content {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   flex-wrap: wrap;
 }
 
 .image-container {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 23%;
+  height: 150px;
   border-radius: 3px;
   margin: 10px 5px;
   overflow: hidden;
@@ -80,7 +80,7 @@ export default {
     left: 50%;
     top: 50%;
     height: 100%;
-    width: auto;
+    width: 100%;
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -124,6 +124,24 @@ export default {
     position: absolute;
     top: 3px;
     right: 3px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .image-container {
+    width: 30%;
+  }
+}
+
+@media (max-width: 600px) {
+  .image-container {
+    width: 45%;
+  }
+}
+
+@media (max-width: 425px) {
+  .image-container {
+    width: 100%;
   }
 }
 </style>
