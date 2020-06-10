@@ -10,7 +10,7 @@
           <div
             class="md-layout-item md-size-25 custom__md-layout-item md-xsmall-size-100"
           >
-            <md-button class="md-primary" @click="$emit('dialog')">
+            <md-button class="md-primary" @click="$emit('open-dialog')">
               <md-icon class="md-size-2x">backup</md-icon>
             </md-button>
           </div>
@@ -21,7 +21,7 @@
         <div class="image-container" v-for="img in value" :key="img.id" v-else>
           <md-button
             class="md-fab md-btn-fab md-danger custom__md-btn"
-            @click="delPic(img.filename)"
+            @click="$emit('delete-item', img.filename)"
           >
             <md-icon>delete_outline</md-icon>
           </md-button>

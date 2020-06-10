@@ -6,7 +6,11 @@
         @update-list-of-images="updateAfterUpload"
         :isActive="activeUpload"
       />
-      <show-pics @dialog="showUploadDialog()" v-model="images" />
+      <show-pics
+        @open-dialog="showUploadDialog()"
+        @delete-item="delPic"
+        v-model="images"
+      />
     </div>
     <intersect @enter="fetchContent()"><div></div></intersect>
   </div>
@@ -66,10 +70,8 @@ export default {
       if (res.success) {
         const index = this.images.findIndex(el => el.filename === name);
         this.images.splice(index, 1);
+        this.items = this.items - 1;
         this.notifyVue("Файл видалено", "done", "success");
-        if (this.lastImageOnPage < this.items - 1) {
-          this.fetchPics(1, this.lastImageOnPage + 1);
-        }
       } else {
         this.notifyVue("Сталася помилка при видаленні", "warning", "danger");
       }
