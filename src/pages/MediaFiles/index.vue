@@ -82,12 +82,14 @@ export default {
         this.images.splice(index, 1);
         this.items = this.items - 1;
 
-        await updateCount({
-          id: category,
-          table: this.table,
-          action: "remove",
-          token: this.token
-        });
+        if (category) {
+          await updateCount({
+            id: category,
+            table: this.table,
+            action: "remove",
+            token: this.token
+          });
+        }
 
         this.notifyVue("Видалено", "done", "success");
       } else {

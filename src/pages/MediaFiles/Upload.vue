@@ -97,7 +97,7 @@ export default {
       return this.$store.getters.getUser.token;
     },
     catId() {
-      return this.category.hasOwnProperty("id") ? this.category.id : null;
+      return this.category.hasOwnProperty("id") ? this.category.id : "";
     }
   },
   methods: {
