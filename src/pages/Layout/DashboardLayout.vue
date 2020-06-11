@@ -2,7 +2,10 @@
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
     <notifications></notifications>
 
-    <side-bar>
+    <side-bar
+      title="БТЕК"
+      :backgroundImage="require('@/assets/img/sidebar-1.jpg')"
+    >
       <mobile-menu slot="content"></mobile-menu>
       <sidebar-link
         :to="route.to"
@@ -57,11 +60,6 @@ export default {
         to: "/users",
         icon: "person"
       }
-      // {
-      //   name: "User Profile",
-      //   to: "/user",
-      //   icon: "person"
-      // }
     ]
   }),
   computed: {
