@@ -5,6 +5,7 @@
         @close-dialog="showUploadDialog()"
         @update-list-of-images="updateAfterUpload"
         :isActive="activeUpload"
+        :table="table"
       />
       <show-pics
         @open-dialog="showUploadDialog()"
@@ -26,6 +27,9 @@ import { MainLoading } from "@/components/Loading/index.js";
 import { Gallery } from "@/services/index";
 const { getPics, delPicture } = new Gallery();
 
+import { Categories } from "@/services/index";
+const { updateCount } = new Categories();
+
 export default {
   name: "media-files",
   data: () => ({
@@ -33,9 +37,13 @@ export default {
     isLoad: false,
     itemsOnPage: 15,
     images: [],
-    items: null
+    items: null,
+    table: "gallery"
   }),
   computed: {
+    token() {
+      return this.$store.getters.getUser.token;
+    },
     isEnd() {
       return this.items > this.images.length;
     }
@@ -66,16 +74,24 @@ export default {
       this.updateList(data, true);
     },
 
-    async delPic(name) {
+    async delPic({ name, category }) {
       if (!window.confirm("Ви дійсно бажаєте видалити зображення?")) return;
       const res = await delPicture(name);
       if (res.success) {
         const index = this.images.findIndex(el => el.filename === name);
         this.images.splice(index, 1);
         this.items = this.items - 1;
-        this.notifyVue("Файл видалено", "done", "success");
+
+        await updateCount({
+          id: category,
+          table: this.table,
+          action: "remove",
+          token: this.token
+        });
+
+        this.notifyVue("Видалено", "done", "success");
       } else {
-        this.notifyVue("Сталася помилка при видаленні", "warning", "danger");
+        this.notifyVue("Сталася помилка", "warning", "danger");
       }
     },
 

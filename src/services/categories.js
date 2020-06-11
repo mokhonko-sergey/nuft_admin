@@ -31,7 +31,7 @@ export default class Categories extends HttpMethods {
   };
 
   //action: new, remove, update;
-  updateCount = async ({ id, table, action, token, oldId }) => {
+  updateCount = async ({ id, table, action, token, oldId, itemsCount = 1 }) => {
     if (!id || !table) return;
 
     //download data
@@ -41,7 +41,7 @@ export default class Categories extends HttpMethods {
     if (action === "new" || action === "update") {
       await this.updateCategory(
         { table, id },
-        { count: parseInt(elNew.count) + 1 },
+        { count: parseInt(elNew.count) + itemsCount },
         token
       );
     }
@@ -53,7 +53,7 @@ export default class Categories extends HttpMethods {
     if (action === "remove" || action === "update") {
       const computedId = oldId ? oldId : id;
       const el = oldEl ? oldEl : elNew;
-      let count = parseInt(el.count) - 1;
+      let count = parseInt(el.count) - itemsCount;
       count = count < 0 ? 0 : count;
       await this.updateCategory({ table, id: computedId }, { count }, token);
     }

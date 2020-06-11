@@ -20,7 +20,12 @@
         <div class="image-container" v-for="img in value" :key="img.id">
           <md-button
             class="md-fab md-btn-fab md-danger custom__md-btn"
-            @click="$emit('delete-item', img.filename)"
+            @click="
+              $emit('delete-item', {
+                name: img.filename,
+                category: img.category
+              })
+            "
           >
             <md-icon>delete_outline</md-icon>
           </md-button>

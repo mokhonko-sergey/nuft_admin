@@ -22,23 +22,34 @@
           class="md-layout-item md-size-100 custom__md-layout-item"
           v-if="filesSrc.length > 0"
         >
+          <drop-down
+            labelSearchPlaceholder="Пошук"
+            labelTitle="Категорія"
+            labelNotFound="Не знайдено"
+            textProp="title"
+            :table="table"
+            v-model="category"
+          />
           <div
             class="image-preview-item"
             v-for="(fileSrc, index) in filesSrc"
             :key="index"
           >
-            <md-button
-              class="md-icon-button md-dense md-danger custom__md-icon-button"
-              @click="removePic(index)"
-            >
-              <md-icon>close</md-icon>
-            </md-button>
-            <img :src="fileSrc" alt="image" class="img-preview" />
-            <md-field>
-              <md-icon>description</md-icon>
-              <label>Короткий опис</label>
-              <md-input v-model="files[index].description"></md-input>
-            </md-field>
+            <div class="image-preview-item__img">
+              <md-button
+                class="md-icon-button md-dense md-danger custom__md-icon-button"
+                @click="removePic(index)"
+              >
+                <md-icon>close</md-icon>
+              </md-button>
+              <img :src="fileSrc" alt="image" class="img-preview" />
+            </div>
+            <div class="image-preview-item__description">
+              <md-field>
+                <label>Короткий опис</label>
+                <md-textarea v-model="files[index].description"></md-textarea>
+              </md-field>
+            </div>
           </div>
         </div>
       </div>
@@ -61,20 +72,33 @@
 
 <script>
 import { MiniLoading } from "@/components/Loading/index.js";
-import { eventBus } from "../../main";
+import DropDown from "@/components/Dropdown/index.vue";
 import { Gallery } from "@/services/index";
 const { uploadPicture } = new Gallery();
+import { Categories } from "@/services/index";
+const { updateCount } = new Categories();
 
 export default {
+  name: "upload-photos",
   props: {
-    isActive: Boolean
+    isActive: Boolean,
+    table: [String, Number]
   },
   data() {
     return {
       uploading: false,
       files: [],
-      filesSrc: []
+      filesSrc: [],
+      category: {}
     };
+  },
+  computed: {
+    token() {
+      return this.$store.getters.getUser.token;
+    },
+    catId() {
+      return this.category.hasOwnProperty("id") ? this.category.id : null;
+    }
   },
   methods: {
     choseFile() {
@@ -113,8 +137,16 @@ export default {
 
       this.uploading = true;
       const queriesArr = [];
+      let items = 0;
       this.files.forEach(el => {
-        queriesArr.push(uploadPicture(el.file, el.description));
+        items++;
+        queriesArr.push(
+          uploadPicture({
+            file: el.file,
+            desc: el.description,
+            category: this.catId
+          })
+        );
       });
 
       const resArr = await Promise.all(queriesArr);
@@ -129,6 +161,15 @@ export default {
             "danger"
           );
         }
+      });
+
+      //update items coun in category
+      await updateCount({
+        id: this.catId,
+        table: this.table,
+        action: "new",
+        token: this.token,
+        itemsCount: items
       });
 
       this.uploading = false;
@@ -154,7 +195,8 @@ export default {
     }
   },
   components: {
-    loading: MiniLoading
+    loading: MiniLoading,
+    DropDown
   }
 };
 </script>
@@ -168,14 +210,26 @@ export default {
 }
 
 .image-preview-item {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  margin: 10px;
-}
-.img-preview {
-  height: 150px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+
+  &__img {
+    position: relative;
+    width: 48%;
+  }
+
+  &__description {
+    width: 48%;
+  }
+}
+
+.img-preview {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .custom__md-icon-button {
