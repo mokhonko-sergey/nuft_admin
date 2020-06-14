@@ -53,8 +53,10 @@ export default {
       this.activeUpload = !this.activeUpload;
     },
 
-    async fetchPics(itemsOnPage, startAt) {
-      const result = await getPics(itemsOnPage, startAt);
+    async fetchPics(items, start) {
+      const result = await getPics({ items, start });
+      // console.log(result);
+
       this.items = result.сountOfItems;
       return result.data;
     },

@@ -5,8 +5,13 @@ export default class Gallery extends HttpMethods {
     super();
   }
 
-  getPics = async ({ items, start, q, c, timestart, timeend }) => {
-    const params = `?itemOnPage=${items}&start=${start}&q=${q}&c=${c}&timestart=${timestart}&timeend=${timeend}`;
+  getPics = async obj => {
+    let params = `/?`;
+    for (const p in obj) {
+      if (!_.isUndefined(obj[p])) {
+        params = params + `${p}=${obj[p]}&`;
+      }
+    }
     return await this._get("gallery", { params });
   };
 
