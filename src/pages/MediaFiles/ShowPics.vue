@@ -16,6 +16,8 @@
           </div>
         </div>
       </md-card-header>
+      <!-- FILTER -->
+      <filter-bar table="gallery" v-model="filters" />
       <md-card-content class="images-content">
         <div class="image-container" v-for="img in value" :key="img.id">
           <md-button
@@ -46,6 +48,7 @@
 </template>
 
 <script>
+import FilterBar from "@/components/Filter";
 export default {
   name: "show-images",
   props: {
@@ -55,6 +58,20 @@ export default {
         return [];
       }
     }
+  },
+  watch: {
+    filters: {
+      deep: true,
+      handler(val) {
+        this.$emit("filters-change", val);
+      }
+    }
+  },
+  data: () => ({
+    filters: {}
+  }),
+  components: {
+    FilterBar
   }
 };
 </script>

@@ -6,7 +6,7 @@ export default class Gallery extends HttpMethods {
   }
 
   getPics = async obj => {
-    let params = `/?`;
+    let params = `?`;
     for (const p in obj) {
       if (!_.isUndefined(obj[p])) {
         params = params + `${p}=${obj[p]}&`;

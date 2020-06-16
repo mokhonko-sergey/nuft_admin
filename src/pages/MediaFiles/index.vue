@@ -8,12 +8,15 @@
         :table="table"
       />
       <show-pics
+        @filters-change="val => (filters = val)"
         @open-dialog="showUploadDialog()"
         @delete-item="delPic"
         v-model="images"
       />
     </div>
-    <intersect @enter="fetchContent()"><div></div></intersect>
+    <intersect @enter="fetchContent()">
+      <div></div>
+    </intersect>
     <loading v-if="isLoad" />
   </div>
 </template>
@@ -38,7 +41,9 @@ export default {
     itemsOnPage: 15,
     images: [],
     items: null,
-    table: "gallery"
+    table: "gallery",
+    filters: {},
+    timeout: null
   }),
   computed: {
     token() {
@@ -48,17 +53,41 @@ export default {
       return this.items > this.images.length;
     }
   },
+  watch: {
+    filters: {
+      deep: true,
+      handler(val) {
+        clearTimeout(this.timeout);
+        this.images = [];
+        this.timeout = setTimeout(() => {
+          this.fetchContent({
+            q: this.filters.q,
+            c: this.filters.c,
+            timestart: this.filters.timestart,
+            timeend: this.filters.timeend
+          });
+        }, 500);
+      }
+    }
+  },
   methods: {
     showUploadDialog() {
       this.activeUpload = !this.activeUpload;
     },
 
-    async fetchPics(items, start) {
-      const result = await getPics({ items, start });
-      // console.log(result);
+    async fetchPics({ items, start, q, c, timestart, timeend }) {
+      const params = {
+        ...(_.isNumber(items) && { items }),
+        ...(_.isNumber(start) && { start }),
+        ...(!_.isEmpty(q) && { q }),
+        ...(!_.isEmpty(c) && { c: c.id }),
+        ...(!_.isEmpty(timestart) && { timestart }),
+        ...(!_.isEmpty(timeend) && { timeend })
+      };
 
+      const result = await getPics(params);
       this.items = result.сountOfItems;
-      return result.data;
+      return result;
     },
 
     updateList(arr, isReverse = false) {
@@ -72,8 +101,8 @@ export default {
     },
 
     async updateAfterUpload(i) {
-      const data = await this.fetchPics(i, 0);
-      this.updateList(data, true);
+      const query = await this.fetchPics({ items: i, start: 0 });
+      query.success && this.updateList(query.data, true);
     },
 
     async delPic({ name, category }) {
@@ -102,15 +131,26 @@ export default {
     async fetchContent() {
       this.isLoad = !this.isLoad;
       if (this.images.length === 0) {
-        const data = await this.fetchPics(this.itemsOnPage, this.images.length);
-        this.updateList(data);
+        const query = await this.fetchPics({
+          items: this.itemsOnPage,
+          start: this.images.length,
+          q: this.filters.q,
+          c: this.filters.c,
+          timeend: this.filters.timeend,
+          timestart: this.filters.timestart
+        });
+        query.success && this.updateList(query.data);
       } else {
         if (this.isEnd) {
-          const data = await this.fetchPics(
-            this.itemsOnPage,
-            this.images.length
-          );
-          this.updateList(data);
+          const data = await this.fetchPics({
+            items: this.itemsOnPage,
+            start: this.images.length,
+            q: this.filters.q,
+            c: this.filters.c,
+            timeend: this.filters.timeend,
+            timestart: this.filters.timestart
+          });
+          query.success && this.updateList(query.data);
         }
       }
       this.isLoad = !this.isLoad;
