@@ -14,7 +14,7 @@
         v-model="images"
       />
     </div>
-    <intersect @enter="fetchContent()">
+    <intersect @enter="fetchContent()" v-if="images.lenght > 0">
       <div></div>
     </intersect>
     <loading v-if="isLoad" />
@@ -142,7 +142,7 @@ export default {
         query.success && this.updateList(query.data);
       } else {
         if (this.isEnd) {
-          const data = await this.fetchPics({
+          const query = await this.fetchPics({
             items: this.itemsOnPage,
             start: this.images.length,
             q: this.filters.q,
@@ -165,6 +165,17 @@ export default {
     ) {
       this.$notify({ message, icon, horizontalAlign, verticalAlign, type });
     }
+  },
+  async created() {
+    const query = await this.fetchPics({
+      items: this.itemsOnPage,
+      start: this.images.length,
+      q: this.filters.q,
+      c: this.filters.c,
+      timeend: this.filters.timeend,
+      timestart: this.filters.timestart
+    });
+    query.success && this.updateList(query.data);
   },
   components: {
     Upload,
