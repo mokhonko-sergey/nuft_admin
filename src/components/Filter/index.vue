@@ -12,6 +12,10 @@
         labelNotFound="Не знайдено"
         textProp="title"
         :table="table"
+        :allowAdd="false"
+        :allowEdit="false"
+        :allowDelete="false"
+        :showCount="false"
         v-model="value.c"
       />
     </div>
