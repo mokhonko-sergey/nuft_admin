@@ -27,16 +27,24 @@
       v-else
     >
       <div class="coll">
-        {{ data[textProp] }} | <b>{{ data.count }}</b>
+        {{ data[textProp] }}
+        <span v-if="showCount">
+          | <b>{{ data.count }}</b>
+        </span>
       </div>
       <div>
-        <md-button class="md-just-icon md-simple md-warning" @click.stop="edit">
+        <md-button
+          class="md-just-icon md-simple md-warning"
+          v-if="allowEdit"
+          @click.stop="edit"
+        >
           <md-icon>edit</md-icon>
           <md-tooltip md-direction="top">Редагувати</md-tooltip>
         </md-button>
 
         <md-button
           class="md-just-icon md-simple md-danger"
+          v-if="allowDelete"
           @click.stop="$emit('delete-item', data.id)"
         >
           <md-icon>delete</md-icon>
@@ -50,7 +58,7 @@
 <script>
 export default {
   name: "v-option",
-  props: ["data", "textProp"],
+  props: ["data", "textProp", "allowEdit", "allowDelete", "showCount"],
   data: () => ({
     isEdit: false,
     newData: {}
