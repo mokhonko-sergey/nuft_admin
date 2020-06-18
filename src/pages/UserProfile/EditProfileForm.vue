@@ -4,7 +4,9 @@
     labelTitle="Нічого не вибрано"
     labelNotFound="Не знайдено:"
     textProp="title"
-    table="films"
+    table="gallery"
+    :allowDelete="false"
+    :showCount="false"
     v-model="selectedValue"
   />
 </template>
