@@ -28,7 +28,7 @@
             class="md-fab md-mini md-info md-btn-fab v-bs-searchbox__btn"
             :disabled="isDisableAddBtn"
             @click="add"
-            v-if="searchValue.length > 0"
+            v-if="searchValue.length > 0 && allowAdd"
           >
             <md-icon>add</md-icon>
             <md-tooltip md-direction="top">Додати</md-tooltip>
@@ -59,6 +59,9 @@
           <v-option
             :data="option"
             :textProp="textProp"
+            :allowEdit="allowEdit"
+            :allowDelete="allowDelete"
+            :showCount="showCount"
             @save-item="save"
             @delete-item="del"
             @select-option="onSelect(option, index)"
@@ -83,7 +86,23 @@ export default {
   name: "vselect-drop-down",
   extends: VSelect,
   props: {
-    table: [String, Number]
+    table: [String, Number],
+    allowAdd: {
+      type: Boolean,
+      default: true
+    },
+    allowEdit: {
+      type: Boolean,
+      default: true
+    },
+    allowDelete: {
+      type: Boolean,
+      default: true
+    },
+    showCount: {
+      type: Boolean,
+      default: true
+    }
   },
   data: () => ({
     loadedOptions: []
