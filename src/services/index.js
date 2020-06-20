@@ -3,5 +3,6 @@ import Users from "./users";
 import Gallery from "./gallery";
 import Auth from "./auth";
 import Categories from "./categories";
+import Pages from "./pages";
 
-export { News, Users, Gallery, Auth, Categories };
+export { News, Users, Pages, Gallery, Auth, Categories };

@@ -56,6 +56,12 @@ export default {
         isAdmin: true
       },
       {
+        name: "Сторінки",
+        to: "/pages",
+        icon: "subject",
+        isAdmin: false
+      },
+      {
         name: "Користувачі",
         to: "/users",
         icon: "person"

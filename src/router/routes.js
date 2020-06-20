@@ -10,6 +10,7 @@ import UserProfile from "@/pages/UserProfile.vue";
 // import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 // import Upload from "@/pages/Upload.vue";
 import MediaFiles from "@/pages/MediaFiles";
+import Pages from "@/pages/Pages";
 import Users from "@/pages/Users/Users";
 import News from "@/pages/News";
 import { beforeEnter } from "./routerguard";
@@ -34,6 +35,11 @@ const userRoutes = [
     path: "mediafiles",
     name: "Media Files",
     component: MediaFiles
+  },
+  {
+    path: "pages",
+    name: "Pages",
+    component: Pages
   },
   {
     path: "users",
