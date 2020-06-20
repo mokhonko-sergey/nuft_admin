@@ -11,7 +11,37 @@ import UserProfile from "@/pages/UserProfile.vue";
 // import Upload from "@/pages/Upload.vue";
 import MediaFiles from "@/pages/MediaFiles";
 import Users from "@/pages/Users/Users";
-import Pages from "@/pages/Pages";
+import News from "@/pages/News";
+import { beforeEnter } from "./routerguard";
+
+const userRoutes = [
+  {
+    path: "dashboard",
+    name: "Dashboard",
+    component: Dashboard
+  },
+  {
+    path: "news",
+    name: "News",
+    component: News
+  },
+  {
+    path: "user",
+    name: "User Profile",
+    component: UserProfile
+  },
+  {
+    path: "mediafiles",
+    name: "Media Files",
+    component: MediaFiles
+  },
+  {
+    path: "users",
+    name: "Users",
+    component: Users,
+    beforeEnter: beforeEnter
+  }
+];
 
 const routes = [
   {
@@ -23,56 +53,7 @@ const routes = [
     path: "/",
     component: DashboardLayout,
     redirect: "/dashboard",
-    children: [
-      {
-        path: "dashboard",
-        name: "Dashboard",
-        component: Dashboard
-      },
-      {
-        path: "pages",
-        name: "Pages",
-        component: Pages
-      },
-      {
-        path: "user",
-        name: "User Profile",
-        component: UserProfile
-      },
-      // {
-      //   path: "table",
-      //   name: "Table List",
-      //   component: TableList
-      // },
-      // {
-      //   path: "typography",
-      //   name: "Typography",
-      //   component: Typography
-      // },
-      // {
-      //   path: "maps",
-      //   name: "Maps",
-      //   meta: {
-      //     hideFooter: true
-      //   },
-      //   component: Maps
-      // },
-      // {
-      //   path: "notifications",
-      //   name: "Notifications",
-      //   component: Notifications
-      // },
-      {
-        path: "mediafiles",
-        name: "Media Files",
-        component: MediaFiles
-      },
-      {
-        path: "users",
-        name: "Users",
-        component: Users
-      }
-    ]
+    children: userRoutes
   }
 ];
 

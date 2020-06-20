@@ -11,14 +11,17 @@
           <img :src="imgLogo" alt="" />
         </div>
       </a>
-      <a href="#" class="simple-text logo-normal">
+      <a
+        href="https://nuft-kebop.firebaseapp.com/"
+        class="simple-text logo-normal"
+        target="_blank"
+      >
         {{ title }}
       </a>
     </div>
     <div class="sidebar-wrapper">
       <slot name="content"></slot>
       <md-list class="nav">
-        <!--By default vue-router adds an active class to each route link. This way the links are colored when clicked-->
         <slot>
           <sidebar-link
             v-for="(link, index) in sidebarLinks"
@@ -50,7 +53,7 @@ export default {
     },
     imgLogo: {
       type: String,
-      default: require("@/assets/img/vue-logo.png")
+      default: require("@/assets/img/logo.png")
     },
     activeColor: {
       type: String,
