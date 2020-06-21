@@ -44,8 +44,7 @@ const userRoutes = [
   {
     path: "users",
     name: "Users",
-    component: Users,
-    beforeEnter: beforeEnter
+    component: Users
   }
 ];
 

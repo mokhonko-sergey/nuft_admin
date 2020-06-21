@@ -70,11 +70,7 @@ export default {
   }),
   computed: {
     userRoutes() {
-      return this.$store.getters.isAdmin
-        ? this.routes
-        : this.routes.filter(el => {
-            if (el.isAdmin === true) return el;
-          });
+      return this.routes;
     }
   },
   components: {
