@@ -6,7 +6,7 @@ export default class News extends HttpMethods {
   }
 
   getNews = async (startAt, itemsOnPage) => {
-    const params = `?startAt=${startAt}&itemsOnPage=${itemsOnPage}`;
+    const params = `?startAt=${startAt}&itemsOnPage=${itemsOnPage}&hideNotVisible=false`;
     const options = {
       method: "GET"
     };
