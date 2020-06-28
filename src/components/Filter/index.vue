@@ -18,7 +18,7 @@
     <div class="filter-bar__item filter-bar__item--datepicker">
       <v-date-picker
         mode="range"
-        nav-visibility="visible"
+        color="green"
         v-model="value.range"
         :input-props="{
           class: '',
@@ -43,8 +43,7 @@ export default {
     }
   },
   data: () => ({
-    employees: [],
-    range: {}
+    employees: []
   }),
   watch: {
     value: {
