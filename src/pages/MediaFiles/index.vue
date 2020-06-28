@@ -63,8 +63,8 @@ export default {
           this.fetchContent({
             q: this.filters.q,
             c: this.filters.c,
-            timestart: this.filters.timestart,
-            timeend: this.filters.timeend
+            timestart: this.filters?.range?.start.getTime(),
+            timeend: this.filters?.range?.end.getTime()
           });
         }, 500);
       }
@@ -81,8 +81,8 @@ export default {
         ...(_.isNumber(start) && { start }),
         ...(!_.isEmpty(q) && { q }),
         ...(!_.isEmpty(c) && { c: c.id }),
-        ...(!_.isEmpty(timestart) && { timestart }),
-        ...(!_.isEmpty(timeend) && { timeend })
+        ...(_.isNumber(timestart) && { timestart }),
+        ...(_.isNumber(timeend) && { timeend })
       };
 
       const result = await getPics(params);
@@ -136,8 +136,8 @@ export default {
           start: this.images.length,
           q: this.filters.q,
           c: this.filters.c,
-          timeend: this.filters.timeend,
-          timestart: this.filters.timestart
+          timestart: this.filters?.range?.start.getTime(),
+          timeend: this.filters?.range?.end.getTime()
         });
         query.success && this.updateList(query.data);
       } else {
@@ -147,8 +147,8 @@ export default {
             start: this.images.length,
             q: this.filters.q,
             c: this.filters.c,
-            timeend: this.filters.timeend,
-            timestart: this.filters.timestart
+            timestart: this.filters?.range?.start.getTime(),
+            timeend: this.filters?.range?.end.getTime()
           });
           query.success && this.updateList(query.data);
         }

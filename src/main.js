@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import VCalendar from "v-calendar";
 
 import App from "./App";
 
@@ -25,11 +26,8 @@ Vue.use(MaterialDashboard);
 Vue.use(GlobalComponents);
 Vue.use(GlobalDirectives);
 Vue.use(Notifications);
+Vue.use(VCalendar, { componentPrefix: "v" });
 
-// const eventBus = new Vue();
-// export { eventBus };
-
-/* eslint-disable no-new */
 new Vue({
   el: "#app",
   render: h => h(App),

@@ -19,6 +19,17 @@
         v-model="value.c"
       />
     </div>
+    <div class="filter-bar__item filter-bar__item--datepicker">
+      <v-date-picker
+        mode="range"
+        color="green"
+        v-model="value.range"
+        :input-props="{
+          class: '',
+          placeholder: 'Пошук по даті'
+        }"
+      />
+    </div>
   </div>
 </template>
 
@@ -64,6 +75,11 @@ export default {
     margin-right: 10px;
     width: 100%;
   }
+
+  &__item--datepicker {
+    max-width: 250px;
+  }
+
   &__item--actions {
     flex-basis: 500px;
   }
